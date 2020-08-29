@@ -50,6 +50,7 @@ class StudentController
         $data = [
             'id' => $student->getId(),
             'name' => $student->getName(),
+            'serial' => $student->getSerial(),
         ];
 
         return new JsonResponse(['student' => $data], Response::HTTP_OK);
@@ -67,6 +68,7 @@ class StudentController
             $data[] = [
                 'id' => $student->getId(),
                 'name' => $student->getName(),
+                'serial' => $student->getSerial(),
             ];
         }
 
