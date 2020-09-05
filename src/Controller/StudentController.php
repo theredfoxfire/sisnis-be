@@ -37,7 +37,7 @@ class StudentController
 
         $this->studentRepository->saveStudent($data);
 
-        return new JsonResponse(['status' => 'Student added!'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Student added!'], Response::HTTP_OK);
     }
 
     /**
@@ -85,7 +85,7 @@ class StudentController
 
         $this->studentRepository->updateStudent($student, $data);
 
-        return new JsonResponse(['status' => 'student updated!']);
+        return new JsonResponse(['status' => 'student updated!'], Response::HTTP_OK);
     }
 
     /**
@@ -97,6 +97,6 @@ class StudentController
 
         $this->studentRepository->removeStudent($student);
 
-        return new JsonResponse(['status' => 'student deleted']);
+        return new JsonResponse(['status' => 'student deleted'], Response::HTTP_OK);
     }
 }

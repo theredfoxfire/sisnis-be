@@ -39,7 +39,7 @@ class ClassRoomController
 
         $this->classRoomRepository->saveClassRoom($name);
 
-        return new JsonResponse(['status' => 'ClassRoom added!'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'ClassRoom added!'], Response::HTTP_OK);
     }
 
     /**
@@ -85,7 +85,7 @@ class ClassRoomController
 
         $this->classRoomRepository->updateClassRoom($classRoom, $data);
 
-        return new JsonResponse(['status' => 'class-room updated!']);
+        return new JsonResponse(['status' => 'class-room updated!'], Response::HTTP_OK);
     }
 
     /**
@@ -97,6 +97,6 @@ class ClassRoomController
 
         $this->classRoomRepository->removeClassRoom($classRoom);
 
-        return new JsonResponse(['status' => 'class-room deleted']);
+        return new JsonResponse(['status' => 'class-room deleted'], Response::HTTP_OK);
     }
 }

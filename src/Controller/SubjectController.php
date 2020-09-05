@@ -37,7 +37,7 @@ class SubjectController
 
         $this->subjectRepository->saveSubject($data);
 
-        return new JsonResponse(['status' => 'Subject added!'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Subject added!'], Response::HTTP_OK);
     }
 
     /**
@@ -85,7 +85,7 @@ class SubjectController
 
         $this->subjectRepository->updateSubject($subject, $data);
 
-        return new JsonResponse(['status' => 'subject updated!']);
+        return new JsonResponse(['status' => 'subject updated!'], Response::HTTP_OK);
     }
 
     /**
@@ -97,6 +97,6 @@ class SubjectController
 
         $this->subjectRepository->removeSubject($subject);
 
-        return new JsonResponse(['status' => 'subject deleted']);
+        return new JsonResponse(['status' => 'subject deleted'], Response::HTTP_OK);
     }
 }

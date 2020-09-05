@@ -37,7 +37,7 @@ class TeacherController
 
         $this->teacherRepository->saveTeacher($data);
 
-        return new JsonResponse(['status' => 'Teacher added!'], Response::HTTP_CREATED);
+        return new JsonResponse(['status' => 'Teacher added!'], Response::HTTP_OK);
     }
 
     /**
@@ -85,7 +85,7 @@ class TeacherController
 
         $this->teacherRepository->updateTeacher($teacher, $data);
 
-        return new JsonResponse(['status' => 'teacher updated!']);
+        return new JsonResponse(['status' => 'teacher updated!'], Response::HTTP_OK);
     }
 
     /**
@@ -97,6 +97,6 @@ class TeacherController
 
         $this->teacherRepository->removeTeacher($teacher);
 
-        return new JsonResponse(['status' => 'teacher deleted']);
+        return new JsonResponse(['status' => 'teacher deleted'], Response::HTTP_OK);
     }
 }
