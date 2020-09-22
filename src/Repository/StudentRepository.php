@@ -46,6 +46,11 @@ class StudentRepository extends ServiceEntityRepository
       $this->manager->flush();
   }
 
+  public function updateStudentClassRoom(Student $student)
+  {
+      $this->manager->flush();
+  }
+
   public function removeStudent(Student $student)
   {
       $this->manager->remove($student);

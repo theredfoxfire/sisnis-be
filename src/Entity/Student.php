@@ -26,6 +26,11 @@ class Student
      */
     private $name;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ClassRoom::class, inversedBy="students")
+     */
+    private $classRoom;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -63,4 +68,16 @@ class Student
               'name' => $this->getName(),
           ];
       }
+
+    public function getClassRoom(): ?ClassRoom
+    {
+        return $this->classRoom;
+    }
+
+    public function setClassRoom(?ClassRoom $classRoom): self
+    {
+        $this->classRoom = $classRoom;
+
+        return $this;
+    }
 }

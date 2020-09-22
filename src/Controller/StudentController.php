@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\StudentRepository;
+use App\Repository\ClassRoomRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class StudentController
 {
     private $studentRepository;
+    private $classRoomRepository;
 
-    public function __construct(StudentRepository $studentRepository)
+    public function __construct(StudentRepository $studentRepository, ClassRoomRepository $classRoomRepository)
     {
         $this->studentRepository = $studentRepository;
+        $this->classRoomRepository = $classRoomRepository;
     }
 
     /**
@@ -54,6 +57,22 @@ class StudentController
         ];
 
         return new JsonResponse(['student' => $data], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/add/cllass-room/{id}", name="add_student_class", methods={"PUT"})
+     */
+    public function addStudentClassRoom($id, Request $request): JsonResponse
+    {
+        $student = $this->studentRepository->findOneBy(['id' => $id]);
+        $data = (object) json_decode($request->getContent(), true);
+        if (empty($data->classRoomId)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+        $student->setClassRoom($this->classRoomRepository->findOneBy(['id' => $data->classRoomId]));
+        $this->studentRepository->updateStudentClassRoom($student, $data);
+
+        return new JsonResponse(['status' => 'student updated!'], Response::HTTP_OK);
     }
 
     /**
@@ -98,5 +117,16 @@ class StudentController
         $this->studentRepository->removeStudent($student);
 
         return new JsonResponse(['status' => 'student deleted'], Response::HTTP_OK);
+    }
+    /**
+     * @Route("/delete/class/{id}", name="delete_student_class", methods={"DELETE"})
+     */
+    public function deleteStudentClass($id): JsonResponse
+    {
+        $student = $this->studentRepository->findOneBy(['id' => $id]);
+        $student->setClassRoom(null);
+        $this->studentRepository->updateStudentClassRoom($student);
+
+        return new JsonResponse(['status' => 'class-room deleted'], Response::HTTP_OK);
     }
 }

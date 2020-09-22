@@ -48,10 +48,14 @@ class ClassRoomController
     public function getOneClassRoom($id): JsonResponse
     {
         $classRoom = $this->classRoomRepository->findOneBy(['id' => $id]);
-
+        $students = [];
+        foreach ($classRoom->getStudents() as $key => $value) {
+            $students[$key] = $value->toArray();
+        }
         $data = [
             'id' => $classRoom->getId(),
             'name' => $classRoom->getName(),
+            'students' => $students,
         ];
 
         return new JsonResponse(['classRoom' => $data], Response::HTTP_OK);
