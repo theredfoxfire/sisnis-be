@@ -60,7 +60,7 @@ class StudentController
     }
 
     /**
-     * @Route("/add/cllass-room/{id}", name="add_student_class", methods={"PUT"})
+     * @Route("/add/class-room/{id}", name="add_student_class", methods={"PUT"})
      */
     public function addStudentClassRoom($id, Request $request): JsonResponse
     {
@@ -118,6 +118,7 @@ class StudentController
 
         return new JsonResponse(['status' => 'student deleted'], Response::HTTP_OK);
     }
+
     /**
      * @Route("/delete/class/{id}", name="delete_student_class", methods={"DELETE"})
      */

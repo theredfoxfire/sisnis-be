@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -25,6 +27,17 @@ class Subject
      * @ORM\Column(type="string", length=200)
      */
     private $name;
+
+    /**
+     * @ORM\OneToMany(targetEntity=TeacherClassToSubject::class, mappedBy="subject")
+     */
+    private $teacherClassToSubjects;
+
+    public function __construct()
+    {
+        $this->teachers = new ArrayCollection();
+        $this->teacherClassToSubjects = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -62,5 +75,36 @@ class Subject
             'serial' => $this->getSerial(),
             'name' => $this->getName(),
         ];
+    }
+
+    /**
+     * @return Collection|TeacherClassToSubject[]
+     */
+    public function getTeacherClassToSubjects(): Collection
+    {
+        return $this->teacherClassToSubjects;
+    }
+
+    public function addTeacherClassToSubject(TeacherClassToSubject $teacherClassToSubject): self
+    {
+        if (!$this->teacherClassToSubjects->contains($teacherClassToSubject)) {
+            $this->teacherClassToSubjects[] = $teacherClassToSubject;
+            $teacherClassToSubject->setSubject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTeacherClassToSubject(TeacherClassToSubject $teacherClassToSubject): self
+    {
+        if ($this->teacherClassToSubjects->contains($teacherClassToSubject)) {
+            $this->teacherClassToSubjects->removeElement($teacherClassToSubject);
+            // set the owning side to null (unless already changed)
+            if ($teacherClassToSubject->getSubject() === $this) {
+                $teacherClassToSubject->setSubject(null);
+            }
+        }
+
+        return $this;
     }
 }

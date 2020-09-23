@@ -28,9 +28,15 @@ class ClassRoom
      */
     private $students;
 
+    /**
+     * @ORM\OneToMany(targetEntity=TeacherClassToSubject::class, mappedBy="classRoom")
+     */
+    private $teacherClassToSubjects;
+
     public function __construct()
     {
         $this->students = new ArrayCollection();
+        $this->teacherClassToSubjects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -83,6 +89,37 @@ class ClassRoom
             // set the owning side to null (unless already changed)
             if ($student->getClassRoom() === $this) {
                 $student->setClassRoom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TeacherClassToSubject[]
+     */
+    public function getTeacherClassToSubjects(): Collection
+    {
+        return $this->teacherClassToSubjects;
+    }
+
+    public function addTeacherClassToSubject(TeacherClassToSubject $teacherClassToSubject): self
+    {
+        if (!$this->teacherClassToSubjects->contains($teacherClassToSubject)) {
+            $this->teacherClassToSubjects[] = $teacherClassToSubject;
+            $teacherClassToSubject->setClassRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTeacherClassToSubject(TeacherClassToSubject $teacherClassToSubject): self
+    {
+        if ($this->teacherClassToSubjects->contains($teacherClassToSubject)) {
+            $this->teacherClassToSubjects->removeElement($teacherClassToSubject);
+            // set the owning side to null (unless already changed)
+            if ($teacherClassToSubject->getClassRoom() === $this) {
+                $teacherClassToSubject->setClassRoom(null);
             }
         }
 
