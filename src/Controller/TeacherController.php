@@ -142,7 +142,7 @@ class TeacherController
      */
     public function deleteTeacherClass($teacherMapId): JsonResponse
     {
-        $teacherMap = $this->teacherMapRepository->findOneBy(['id' => $id]);
+        $teacherMap = $this->teacherMapRepository->findOneBy(['id' => $teacherMapId]);
         $this->teacherMapRepository->removeTeacherMap($teacherMap);
 
         return new JsonResponse(['status' => 'teacher-map deleted'], Response::HTTP_OK);
