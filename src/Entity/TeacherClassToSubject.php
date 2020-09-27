@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TeacherClassToSubjectRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,6 +33,16 @@ class TeacherClassToSubject
      * @ORM\ManyToOne(targetEntity=Subject::class, inversedBy="teacherClassToSubjects")
      */
     private $subject;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Exam::class, mappedBy="teacherSubject")
+     */
+    private $exams;
+
+    public function __construct()
+    {
+        $this->exams = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -69,6 +81,37 @@ class TeacherClassToSubject
     public function setSubject(?Subject $subject): self
     {
         $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Exam[]
+     */
+    public function getExams(): Collection
+    {
+        return $this->exams;
+    }
+
+    public function addExam(Exam $exam): self
+    {
+        if (!$this->exams->contains($exam)) {
+            $this->exams[] = $exam;
+            $exam->setTeacherSubject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExam(Exam $exam): self
+    {
+        if ($this->exams->contains($exam)) {
+            $this->exams->removeElement($exam);
+            // set the owning side to null (unless already changed)
+            if ($exam->getTeacherSubject() === $this) {
+                $exam->setTeacherSubject(null);
+            }
+        }
 
         return $this;
     }
