@@ -28,12 +28,14 @@ class ExamRepository extends ServiceEntityRepository
       $this->manager = $manager;
   }
 
-  public function saveExam($examData, TeacherClassToSubject $teacherSubject)
+  public function saveExam($examData, TeacherClassToSubject $teacherSubject, $examType)
   {
       $exam = new Exam();
 
       $exam->setTeacherSubject($teacherSubject);
       $exam->setName($examData->name);
+      $exam->setDate($examData->examDate);
+      $exam->setExamType($examType);
 
       $this->manager->persist($exam);
       $this->manager->flush();

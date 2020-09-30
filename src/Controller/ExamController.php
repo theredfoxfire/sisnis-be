@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ExamRepository;
+use App\Repository\ExamTypeRepository;
 use App\Repository\TeacherClassToSubjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,11 +20,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExamController
 {
     private $examRepository;
+    private $examTypeRepository;
     private $teacherClassToSubjectRepository;
 
-    public function __construct(ExamRepository $examRepository, TeacherClassToSubjectRepository $teacherClassToSubjectRepository)
+    public function __construct(ExamRepository $examRepository, ExamTypeRepository $examTypeRepository, TeacherClassToSubjectRepository $teacherClassToSubjectRepository)
     {
         $this->examRepository = $examRepository;
+        $this->examTypeRepository = $examTypeRepository;
         $this->teacherClassToSubjectRepository = $teacherClassToSubjectRepository;
     }
 
@@ -34,12 +37,13 @@ class ExamController
     {
         $data = (object)json_decode($request->getContent(), true);
 
-        if (empty($data->name) || empty($data->teacherSubject)) {
+        if (empty($data->name) || empty($data->teacherSubject) || empty($data->examType) || empty($data->examDate)) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
         $teacherSubject = $this->teacherClassToSubjectRepository->findOneBy(['id' => $data->teacherSubject]);
+        $examType = $this->examTypeRepository->findOneBy(['id' => $data->examType]);
 
-        $this->examRepository->saveExam($data, $teacherSubject);
+        $this->examRepository->saveExam($data, $teacherSubject, $examType);
 
         return new JsonResponse(['status' => 'Exam added!'], Response::HTTP_OK);
     }
@@ -68,7 +72,7 @@ class ExamController
         $teacherSubject = $this->teacherClassToSubjectRepository->findOneBy(['id' => $id]);
         $exams = [];
         foreach ($teacherSubject->getExams() as $key => $value) {
-            $exams[$key] = $value->toArray();
+            $exams[$key] = array_merge($value->toArray(), $value->getExamType()->toArray());
         }
 
         $data = [

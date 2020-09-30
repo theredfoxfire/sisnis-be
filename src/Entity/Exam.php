@@ -27,6 +27,16 @@ class Exam
      */
     private $teacherSubject;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ExamType::class, inversedBy="exams")
+     */
+    private $examType;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $date;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -56,10 +66,35 @@ class Exam
         return $this;
     }
     public function toArray()
-        {
-            return [
-                'id' => $this->getId(),
-                'name' => $this->getName(),
-            ];
-        }
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'date' => $this->getDate(),
+        ];
+    }
+
+    public function getExamType(): ?ExamType
+    {
+        return $this->examType;
+    }
+
+    public function setExamType(?ExamType $examType): self
+    {
+        $this->examType = $examType;
+
+        return $this;
+    }
+
+    public function getDate(): ?string
+    {
+        return $this->date;
+    }
+
+    public function setDate(?string $date): self
+    {
+        $this->date = $date;
+
+        return $this;
+    }
 }
