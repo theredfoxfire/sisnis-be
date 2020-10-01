@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Repository\ExamRepository;
+use App\Repository\StudentRepository;
 use App\Repository\ExamTypeRepository;
 use App\Repository\TeacherClassToSubjectRepository;
+use App\Repository\ExamPointRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,13 +22,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExamController
 {
     private $examRepository;
+    private $studentRepository;
+    private $examPointRepository;
     private $examTypeRepository;
     private $teacherClassToSubjectRepository;
 
-    public function __construct(ExamRepository $examRepository, ExamTypeRepository $examTypeRepository, TeacherClassToSubjectRepository $teacherClassToSubjectRepository)
+    public function __construct(StudentRepository $studentRepository, ExamRepository $examRepository, ExamPointRepository $examPointRepository, ExamTypeRepository $examTypeRepository, TeacherClassToSubjectRepository $teacherClassToSubjectRepository)
     {
         $this->examRepository = $examRepository;
+        $this->examPointRepository = $examPointRepository;
         $this->examTypeRepository = $examTypeRepository;
+        $this->studentRepository = $studentRepository;
         $this->teacherClassToSubjectRepository = $teacherClassToSubjectRepository;
     }
 
@@ -47,6 +53,24 @@ class ExamController
 
         return new JsonResponse(['status' => 'Exam added!'], Response::HTTP_OK);
     }
+    /**
+     * @Route("/point/add", name="add_point_exam", methods={"POST"})
+     */
+    public function addExamPoint(Request $request): JsonResponse
+    {
+        $data = (object)json_decode($request->getContent(), true);
+
+        if (empty($data->examId) || empty($data->studentPoints)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+        foreach ($data->studentPoints as $key => $value) {
+            $exam = $this->examRepository->findOneBy(['id' => $data->examId]);
+            $student = $this->studentRepository->findOneBy(['id' => $value['id']]);
+            $this->examPointRepository->saveExamPoint($value['point'], $exam, $student);
+        }
+
+        return new JsonResponse(['status' => 'Exam added!'], Response::HTTP_OK);
+    }
 
     /**
      * @Route("/get/{id}", name="get_one_exam", methods={"GET"})
@@ -54,11 +78,35 @@ class ExamController
     public function getOneExam($id): JsonResponse
     {
         $exam = $this->examRepository->findOneBy(['id' => $id]);
+        $students = [];
+        $examPoints = [];
+        foreach ($exam->getTeacherSubject()->getClassRoom()->getStudents() as $key => $value) {
+            $students[$key] = [
+                'studentId' => $value->getId(),
+                'studentName' => $value->getName(),
+            ];
+        }
+
+        foreach ($exam->getExamPoints() as $key => $value) {
+            $examPoints[$key] = [
+                'id' => $value->getStudent()->getId(),
+                'point' => $value->getPoint(),
+            ];
+        }
 
         $data = [
             'id' => $exam->getId(),
             'name' => $exam->getName(),
-            'serial' => $exam->getSerial(),
+            'date' => $exam->getDate(),
+            'teacherSubjectId' => $exam->getTeacherSubject()->getId(),
+            'classRoomId' => $exam->getTeacherSubject()->getClassRoom()->getId(),
+            'classRoomName' => $exam->getTeacherSubject()->getClassRoom()->getName(),
+            'subjectId' => $exam->getTeacherSubject()->getSubject()->getId(),
+            'subjectName' => $exam->getTeacherSubject()->getSubject()->getName(),
+            'teacherId' => $exam->getTeacherSubject()->getTeacher()->getId(),
+            'teacherName' => $exam->getTeacherSubject()->getTeacher()->getName(),
+            'students' => $students,
+            'examPoints' => $examPoints,
         ];
 
         return new JsonResponse(['exam' => $data], Response::HTTP_OK);

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ExamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class Exam
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $date;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ExamPoint::class, mappedBy="exam")
+     */
+    private $examPoints;
+
+    public function __construct()
+    {
+        $this->examPoints = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -94,6 +106,37 @@ class Exam
     public function setDate(?string $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ExamPoint[]
+     */
+    public function getExamPoints(): Collection
+    {
+        return $this->examPoints;
+    }
+
+    public function addExamPoint(ExamPoint $examPoint): self
+    {
+        if (!$this->examPoints->contains($examPoint)) {
+            $this->examPoints[] = $examPoint;
+            $examPoint->setExam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExamPoint(ExamPoint $examPoint): self
+    {
+        if ($this->examPoints->contains($examPoint)) {
+            $this->examPoints->removeElement($examPoint);
+            // set the owning side to null (unless already changed)
+            if ($examPoint->getExam() === $this) {
+                $examPoint->setExam(null);
+            }
+        }
 
         return $this;
     }
