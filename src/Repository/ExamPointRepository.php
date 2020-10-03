@@ -41,6 +41,12 @@ class ExamPointRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
+    public function updateExamPoint(ExamPoint $examPoint, $data)
+    {
+      $examPoint->setPoint($data['point']);
+      $this->manager->flush();
+    }
+
     // /**
     //  * @return ExamPoint[] Returns an array of ExamPoint objects
     //  */

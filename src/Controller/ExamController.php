@@ -53,6 +53,7 @@ class ExamController
 
         return new JsonResponse(['status' => 'Exam added!'], Response::HTTP_OK);
     }
+
     /**
      * @Route("/point/add", name="add_point_exam", methods={"POST"})
      */
@@ -70,6 +71,24 @@ class ExamController
         }
 
         return new JsonResponse(['status' => 'Exam added!'], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/point/update", name="update_point_exam", methods={"PUT"})
+     */
+    public function updateExamPoint(Request $request): JsonResponse
+    {
+        $data = (object)json_decode($request->getContent(), true);
+
+        if (empty($data->examId) || empty($data->studentPoints)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+        foreach ($data->studentPoints as $key => $value) {
+            $examPoint = $this->examPointRepository->findOneBy(['id' => $value['pointId']]);
+            $this->examPointRepository->updateExamPoint($examPoint, $value);
+        }
+
+        return new JsonResponse(['status' => 'Exam Updated!'], Response::HTTP_OK);
     }
 
     /**
@@ -91,6 +110,7 @@ class ExamController
             $examPoints[$key] = [
                 'id' => $value->getStudent()->getId(),
                 'point' => $value->getPoint(),
+                'pointId' => $value->getId(),
             ];
         }
 
@@ -127,6 +147,8 @@ class ExamController
             'id' => $teacherSubject->getId(),
             'name' => $teacherSubject->getSubject()->getName(),
             'className' => $teacherSubject->getClassRoom()->getName(),
+            'teacherName' => $teacherSubject->getTeacher()->getName(),
+            'teacherId' => $teacherSubject->getTeacher()->getId(),
             'exams' => $exams,
         ];
 
