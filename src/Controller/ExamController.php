@@ -27,7 +27,13 @@ class ExamController
     private $examTypeRepository;
     private $teacherClassToSubjectRepository;
 
-    public function __construct(StudentRepository $studentRepository, ExamRepository $examRepository, ExamPointRepository $examPointRepository, ExamTypeRepository $examTypeRepository, TeacherClassToSubjectRepository $teacherClassToSubjectRepository)
+    public function __construct(
+        StudentRepository $studentRepository,
+        ExamRepository $examRepository,
+        ExamPointRepository $examPointRepository,
+        ExamTypeRepository $examTypeRepository,
+        TeacherClassToSubjectRepository $teacherClassToSubjectRepository
+    )
     {
         $this->examRepository = $examRepository;
         $this->examPointRepository = $examPointRepository;

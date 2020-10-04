@@ -56,4 +56,33 @@ class StudentRepository extends ServiceEntityRepository
       $this->manager->remove($student);
       $this->manager->flush();
   }
+
+  /**
+   * @return ExamPoint[] Returns an array of ExamPoint objects
+   *
+   * ->andWhere('e.exampleField = :val')
+   * ->setParameter('val', $value)
+   */
+  public function getAllStudents($start = 0, $max = 25)
+  {
+      $data = $this->createQueryBuilder('e')
+          ->orderBy('e.id', 'ASC')
+          ->setFirstResult($start)
+          ->setMaxResults($max)
+          ->getQuery()
+          ->getResult();
+
+      $totals = $this->createQueryBuilder('e')
+          ->getQuery()
+          ->getResult();
+      return (object) array('totals' => count($totals), 'data' => $data);
+  }
+//TODO: add search action
+// $repository = $em->getRepository('AcmeCrawlerBundle:Trainings');
+//        $query = $repository->createQueryBuilder('p')
+//                ->where('p.title LIKE :word')
+//                ->orWhere('p.discription LIKE :word')
+//                ->setParameter('word', '%'.$word.'%')
+//                ->getQuery();
+//         $trainings = $query->getResult();
 }

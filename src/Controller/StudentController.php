@@ -78,12 +78,15 @@ class StudentController
     /**
      * @Route("/get-all", name="get_all_students", methods={"GET"})
      */
-    public function getAllStudents(): JsonResponse
+    public function getAllStudents(Request $request): JsonResponse
     {
-        $students = $this->studentRepository->findAll();
+        $currentPage = $request->query->get('page');
+        $pageItems = $request->query->get('pageItems');
+        $start = ($currentPage - 1) * $pageItems;
+        $students = $this->studentRepository->getAllStudents($start, $pageItems);
         $data = [];
 
-        foreach ($students as $student) {
+        foreach ($students->data as $student) {
             $data[] = [
                 'id' => $student->getId(),
                 'name' => $student->getName(),
@@ -91,7 +94,7 @@ class StudentController
             ];
         }
 
-        return new JsonResponse(['students' => $data], Response::HTTP_OK);
+        return new JsonResponse(['students' => $data, 'totals' => $students->totals], Response::HTTP_OK);
     }
 
     /**
