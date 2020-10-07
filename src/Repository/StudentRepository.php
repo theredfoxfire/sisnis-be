@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class StudentRepository extends ServiceEntityRepository
 {
   private $manager;
+  private $classStatus;
 
   public function __construct
   (
@@ -25,6 +26,7 @@ class StudentRepository extends ServiceEntityRepository
   {
       parent::__construct($registry, Student::class);
       $this->manager = $manager;
+      $this->classStatus = (object)['yes' => 'YES', 'no' => 'NO'];
   }
 
   public function saveStudent($studentData)
@@ -63,16 +65,27 @@ class StudentRepository extends ServiceEntityRepository
    * ->andWhere('e.exampleField = :val')
    * ->setParameter('val', $value)
    */
-  public function getAllStudents($start = 0, $max = 25)
+  public function getAllStudents($start = 0, $max = 25, $name="", $haveClass="")
   {
-      $data = $this->createQueryBuilder('e')
-          ->orderBy('e.id', 'ASC')
+      $query = $this->createQueryBuilder('e');
+      if (strtoupper($haveClass) == $this->classStatus->no) {
+        $query->where('e.classRoom IS NULL');
+      }
+      if (strtoupper($haveClass) == $this->classStatus->yes) {
+        $query->where('e.classRoom IS NOT NULL');
+      }
+      if ($name != "" && $haveClass != "") {
+        $query->andWhere('e.name LIKE :name')->setParameter('name', $name.'%');
+      }
+      if ($name != "" && $haveClass == "") {
+        $query->where('e.name LIKE :name')->setParameter('name', $name.'%');
+      }
+      $data = $query->orderBy('e.id', 'ASC')
           ->setFirstResult($start)
           ->setMaxResults($max)
-          ->getQuery()
-          ->getResult();
+          ->getQuery()->getResult();
 
-      $totals = $this->createQueryBuilder('e')
+      $totals = $query
           ->getQuery()
           ->getResult();
       return (object) array('totals' => count($totals), 'data' => $data);

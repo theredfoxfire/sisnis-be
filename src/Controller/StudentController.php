@@ -82,8 +82,10 @@ class StudentController
     {
         $currentPage = $request->query->get('page');
         $pageItems = $request->query->get('pageItems');
+        $name = $request->query->get('name');
+        $haveClass = $request->query->get('haveClass');
         $start = ($currentPage - 1) * $pageItems;
-        $students = $this->studentRepository->getAllStudents($start, $pageItems);
+        $students = $this->studentRepository->getAllStudents($start, $pageItems, $name, $haveClass);
         $data = [];
 
         foreach ($students->data as $student) {
