@@ -85,7 +85,7 @@ class StudentRepository extends ServiceEntityRepository
           ->setMaxResults($max)
           ->getQuery()->getResult();
 
-      $totals = $query
+      $totals = $this->createQueryBuilder('e')
           ->getQuery()
           ->getResult();
       return (object) array('totals' => count($totals), 'data' => $data);
