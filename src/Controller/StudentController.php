@@ -49,11 +49,13 @@ class StudentController
     public function getOneStudent($id): JsonResponse
     {
         $student = $this->studentRepository->findOneBy(['id' => $id]);
-
+        $classRoom = $student->getClassRoom();
         $data = [
             'id' => $student->getId(),
             'name' => $student->getName(),
             'serial' => $student->getSerial(),
+            'classId' => $classRoom ? $classRoom->getId() : 0,
+            'className' => $classRoom ? $classRoom->getName() : '',
         ];
 
         return new JsonResponse(['student' => $data], Response::HTTP_OK);
@@ -89,10 +91,13 @@ class StudentController
         $data = [];
 
         foreach ($students->data as $student) {
+            $classRoom = $student->getClassRoom();
             $data[] = [
                 'id' => $student->getId(),
                 'name' => $student->getName(),
                 'serial' => $student->getSerial(),
+                'classId' => $classRoom ? $classRoom->getId() : 0,
+                'className' => $classRoom ? $classRoom->getName() : '',
             ];
         }
 
