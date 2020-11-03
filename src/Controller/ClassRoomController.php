@@ -76,11 +76,13 @@ class ClassRoomController
     {
         $classRooms = $this->classRoomRepository->findAll();
         $data = [];
-
         foreach ($classRooms as $classRoom) {
+            $guardian = $classRoom->getGuardian();
             $data[] = [
                 'id' => $classRoom->getId(),
                 'name' => $classRoom->getName(),
+                'teacherId' => $guardian ? $guardian->getId() : 0,
+                'guardianName' => $guardian ? $guardian->getName() : "---",
             ];
         }
 
