@@ -57,6 +57,7 @@ class TeacherController
     {
         $teacher = $this->teacherRepository->findOneBy(['id' => $id]);
         $classSubjects = [];
+        $guardianClass = [];
         foreach ($teacher->getTeacherClassToSubjects() as $key => $value) {
             $classSubjects[$key] = [
                 'classToSubjectId' => $value->getId(),
@@ -64,12 +65,16 @@ class TeacherController
                 'subject' => $value->getSubject()->toArray(),
             ];
         }
+        foreach ($teacher->getGuardianClass() as $key => $class) {
+            $guardianClass[] = $class->toArray();
+        }
 
         $data = [
             'id' => $teacher->getId(),
             'name' => $teacher->getName(),
             'serial' => $teacher->getSerial(),
             'classToSubjects' => $classSubjects,
+            'guardianClass' => $guardianClass,
         ];
 
         return new JsonResponse(['teacher' => $data], Response::HTTP_OK);
@@ -82,12 +87,17 @@ class TeacherController
     {
         $teachers = $this->teacherRepository->findAll();
         $data = [];
+        $guardianClass = [];
 
         foreach ($teachers as $teacher) {
+            foreach ($teacher->getGuardianClass() as $key => $class) {
+                $guardianClass[] = $class->toArray();
+            }
             $data[] = [
                 'id' => $teacher->getId(),
                 'name' => $teacher->getName(),
                 'serial' => $teacher->getSerial(),
+                'guardianClass' => $guardianClass,
             ];
         }
 
