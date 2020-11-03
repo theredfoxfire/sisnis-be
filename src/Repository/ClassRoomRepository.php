@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ClassRoom;
+use App\Entity\Teacher;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,19 +28,28 @@ class ClassRoomRepository extends ServiceEntityRepository
       $this->manager = $manager;
   }
 
-  public function saveClassRoom($name)
+  public function saveClassRoom($name, Teacher $teacher)
   {
       $classRoom = new ClassRoom();
 
       $classRoom->setName($name);
+      $classRoom->setGuardian($teacher);
 
       $this->manager->persist($classRoom);
       $this->manager->flush();
   }
 
-  public function updateClassRoom(ClassRoom $classRooms, $data)
+  public function updateClassRoom(ClassRoom $classRooms, $data, Teacher $teacher)
   {
       empty($data['name']) ? true : $classRooms->setName($data['name']);
+      $classRooms->setGuardian($teacher);
+
+      $this->manager->flush();
+  }
+
+  public function setGuardianClass(ClassRoom $classRooms, Teacher $teacher)
+  {
+      $classRooms->setGuardian($teacher);
 
       $this->manager->flush();
   }

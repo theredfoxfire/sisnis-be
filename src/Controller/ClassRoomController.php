@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ClassRoomRepository;
+use App\Repository\TeacherRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ClassRoomController
 {
     private $classRoomRepository;
+    private $teacherRepository;
 
-    public function __construct(ClassRoomRepository $classRoomRepository)
+    public function __construct(ClassRoomRepository $classRoomRepository, TeacherRepository $teacherRepository)
     {
         $this->classRoomRepository = $classRoomRepository;
+        $this->teacherRepository = $teacherRepository;
     }
 
     /**
@@ -31,13 +34,12 @@ class ClassRoomController
     {
         $data = json_decode($request->getContent(), true);
 
-        $name = $data['name'];
-
-        if (empty($name)) {
+        if (empty($data['name']) || empty($data['teacherId'])) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
 
-        $this->classRoomRepository->saveClassRoom($name);
+        $teacher = $this->teacherRepository->findOneBy(['id' => $data['teacherId']]);
+        $this->classRoomRepository->saveClassRoom($data['name'], $teacher);
 
         return new JsonResponse(['status' => 'ClassRoom added!'], Response::HTTP_OK);
     }
@@ -48,13 +50,19 @@ class ClassRoomController
     public function getOneClassRoom($id): JsonResponse
     {
         $classRoom = $this->classRoomRepository->findOneBy(['id' => $id]);
+        if (empty($classRoom)) {
+            throw new NotFoundHttpException('Invalid class room ID!');
+        }
         $students = [];
         foreach ($classRoom->getStudents() as $key => $value) {
             $students[$key] = $value->toArray();
         }
+        $guardian = $classRoom->getGuardian();
         $data = [
             'id' => $classRoom->getId(),
             'name' => $classRoom->getName(),
+            'teacherId' => $guardian ? $guardian->getId() : 0,
+            'guardianName' => $guardian ? $guardian->getName() : "",
             'students' => $students,
         ];
 
@@ -86,8 +94,23 @@ class ClassRoomController
     {
         $classRoom = $this->classRoomRepository->findOneBy(['id' => $id]);
         $data = json_decode($request->getContent(), true);
+        $teacher = $this->teacherRepository->findOneBy(['id' => $data['teacherId']]);
 
-        $this->classRoomRepository->updateClassRoom($classRoom, $data);
+        $this->classRoomRepository->updateClassRoom($classRoom, $data, $teacher);
+
+        return new JsonResponse(['status' => 'class-room updated!'], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/set-guardian/{id}", name="set_guardian_class_room", methods={"PUT"})
+     */
+    public function setGuardianClass($id, Request $request): JsonResponse
+    {
+        $classRoom = $this->classRoomRepository->findOneBy(['id' => $id]);
+        $data = json_decode($request->getContent(), true);
+        $teacher = $this->teacherRepository->findOneBy(['id' => $data['teacherId']]);
+
+        $this->classRoomRepository->setGuardianClass($classRoom, $teacher);
 
         return new JsonResponse(['status' => 'class-room updated!'], Response::HTTP_OK);
     }

@@ -33,6 +33,11 @@ class ClassRoom
      */
     private $teacherClassToSubjects;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Teacher::class, inversedBy="guardianClass")
+     */
+    private $guardian;
+
     public function __construct()
     {
         $this->students = new ArrayCollection();
@@ -122,6 +127,18 @@ class ClassRoom
                 $teacherClassToSubject->setClassRoom(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getGuardian(): ?Teacher
+    {
+        return $this->guardian;
+    }
+
+    public function setGuardian(?Teacher $guardian): self
+    {
+        $this->guardian = $guardian;
 
         return $this;
     }

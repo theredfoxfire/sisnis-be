@@ -33,9 +33,15 @@ class Teacher
      */
     private $teacherClassToSubjects;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ClassRoom::class, mappedBy="guardian")
+     */
+    private $guardianClass;
+
     public function __construct()
     {
         $this->teacherClassToSubjects = new ArrayCollection();
+        $this->guardianClass = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -101,6 +107,37 @@ class Teacher
             // set the owning side to null (unless already changed)
             if ($teacherClassToSubject->getTeacher() === $this) {
                 $teacherClassToSubject->setTeacher(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ClassRoom[]
+     */
+    public function getGuardianClass(): Collection
+    {
+        return $this->guardianClass;
+    }
+
+    public function addGuardianClass(ClassRoom $guardianClass): self
+    {
+        if (!$this->guardianClass->contains($guardianClass)) {
+            $this->guardianClass[] = $guardianClass;
+            $guardianClass->setGuardian($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGuardianClass(ClassRoom $guardianClass): self
+    {
+        if ($this->guardianClass->contains($guardianClass)) {
+            $this->guardianClass->removeElement($guardianClass);
+            // set the owning side to null (unless already changed)
+            if ($guardianClass->getGuardian() === $this) {
+                $guardianClass->setGuardian(null);
             }
         }
 
