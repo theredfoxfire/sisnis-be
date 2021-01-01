@@ -61,10 +61,8 @@ class AcademicYearController
     {
         $currentPage = $request->query->get('page');
         $pageItems = $request->query->get('pageItems');
-        $name = $request->query->get('name');
-        $haveClass = $request->query->get('haveClass');
         $start = ($currentPage - 1) * $pageItems;
-        $academicYears = $this->academicYearRepository->getAllAcademicYears($start, $pageItems, $name, $haveClass);
+        $academicYears = $this->academicYearRepository->getAllAcademicYears($start, $pageItems);
         $data = [];
 
         foreach ($academicYears->data as $academicYear) {

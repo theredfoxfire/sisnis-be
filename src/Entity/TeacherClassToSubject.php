@@ -39,6 +39,11 @@ class TeacherClassToSubject
      */
     private $exams;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=AcademicYear::class, inversedBy="subject")
+     */
+    private $academicYear;
+
     public function __construct()
     {
         $this->exams = new ArrayCollection();
@@ -112,6 +117,18 @@ class TeacherClassToSubject
                 $exam->setTeacherSubject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAcademicYear(): ?AcademicYear
+    {
+        return $this->academicYear;
+    }
+
+    public function setAcademicYear(?AcademicYear $academicYear): self
+    {
+        $this->academicYear = $academicYear;
 
         return $this;
     }

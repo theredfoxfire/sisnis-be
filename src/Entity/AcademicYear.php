@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AcademicYearRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,6 +28,16 @@ class AcademicYear
      * @ORM\Column(type="boolean")
      */
     private $isActive;
+
+    /**
+     * @ORM\OneToMany(targetEntity=TeacherClassToSubject::class, mappedBy="academicYear")
+     */
+    private $subject;
+
+    public function __construct()
+    {
+        $this->subject = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -63,5 +75,36 @@ class AcademicYear
             'year' => $this->getYear(),
             'isActive' => $this->getIsActive() ? "TRUE" : "FALSE",
         ];
+    }
+
+    /**
+     * @return Collection|TeacherClassToSubject[]
+     */
+    public function getSubject(): Collection
+    {
+        return $this->subject;
+    }
+
+    public function addSubject(TeacherClassToSubject $subject): self
+    {
+        if (!$this->subject->contains($subject)) {
+            $this->subject[] = $subject;
+            $subject->setAcademicYear($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubject(TeacherClassToSubject $subject): self
+    {
+        if ($this->subject->contains($subject)) {
+            $this->subject->removeElement($subject);
+            // set the owning side to null (unless already changed)
+            if ($subject->getAcademicYear() === $this) {
+                $subject->setAcademicYear(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\TeacherRepository;
 use App\Repository\ClassRoomRepository;
 use App\Repository\SubjectRepository;
+use App\Repository\AcademicYearRepository;
 use App\Repository\TeacherClassToSubjectRepository;
 use App\Entity\TeacherClassToSubject;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,13 +26,15 @@ class TeacherController
     private $classRoomRepository;
     private $subjectRepository;
     private $teacherMapRepository;
+    private $academicYearRepository;
 
-    public function __construct(TeacherClassToSubjectRepository $teacherMapRepository,SubjectRepository $subjectRepository, TeacherRepository $teacherRepository, ClassRoomRepository $classRoomRepository)
+    public function __construct(AcademicYearRepository $academicYearRepository, TeacherClassToSubjectRepository $teacherMapRepository,SubjectRepository $subjectRepository, TeacherRepository $teacherRepository, ClassRoomRepository $classRoomRepository)
     {
         $this->teacherRepository = $teacherRepository;
         $this->classRoomRepository = $classRoomRepository;
         $this->subjectRepository = $subjectRepository;
         $this->teacherMapRepository = $teacherMapRepository;
+        $this->academicYearRepository = $academicYearRepository;
     }
 
     /**
@@ -63,6 +66,8 @@ class TeacherController
                 'classToSubjectId' => $value->getId(),
                 'classRoom' => $value->getClassRoom()->toArray(),
                 'subject' => $value->getSubject()->toArray(),
+                'yearId' => empty($value->getAcademicYear()) ? "" : $value->getAcademicYear()->getId(),
+                'year' => empty($value->getAcademicYear()) ? "" :  $value->getAcademicYear()->getYear(),
             ];
         }
         foreach ($teacher->getGuardianClass() as $key => $class) {
@@ -135,13 +140,14 @@ class TeacherController
     public function addTeacherClassRoom($id, Request $request): JsonResponse
     {
         $data = (object) json_decode($request->getContent(), true);
-        if (empty($data->classRoomId) || empty($data->subjectId)) {
+        if (empty($data->classRoomId) || empty($data->subjectId) || empty($data->year)) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
         $teacherMap = new TeacherClassToSubject();
         $teacherMap->setClassRoom($this->classRoomRepository->findOneBy(['id' => $data->classRoomId]));
         $teacherMap->setSubject($this->subjectRepository->findOneBy(['id' => $data->subjectId]));
         $teacherMap->setTeacher($this->teacherRepository->findOneBy(['id' => $id]));
+        $teacherMap->setAcademicYear($this->academicYearRepository->findOneBy(['id' => $data->year]));
         $this->teacherMapRepository->updateTeacherClassRoom($teacherMap);
 
         return new JsonResponse(['status' => 'teacher updated!'], Response::HTTP_OK);
