@@ -33,6 +33,11 @@ class Subject
      */
     private $teacherClassToSubjects;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
     public function __construct()
     {
         $this->teachers = new ArrayCollection();
@@ -104,6 +109,18 @@ class Subject
                 $teacherClassToSubject->setSubject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

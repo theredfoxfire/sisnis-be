@@ -55,8 +55,9 @@ class StudentRepository extends ServiceEntityRepository
 
   public function removeStudent(Student $student)
   {
-      $this->manager->remove($student);
-      $this->manager->flush();
+    $student->setIsDeleted(true);
+
+    $this->manager->flush();
   }
 
   /**
@@ -80,6 +81,8 @@ class StudentRepository extends ServiceEntityRepository
       if ($name != "" && $haveClass == "") {
         $query->where('e.name LIKE :name')->setParameter('name', $name.'%');
       }
+      $query->orWhere('e.isDeleted IS NULL');
+      $query->orWhere('e.isDeleted = false');
       $data = $query->orderBy('e.id', 'ASC')
           ->setFirstResult($start)
           ->setMaxResults($max)

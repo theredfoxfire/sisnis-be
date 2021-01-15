@@ -31,6 +31,11 @@ class User implements UserInterface
     private $email;
 
     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
+    /**
      * User constructor.
      * @param $username
      */
@@ -104,5 +109,17 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
+
+        return $this;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\StudentRepository;
 use App\Repository\ClassRoomRepository;
+use App\Repository\ClassHistoryRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,11 +21,13 @@ class StudentController
 {
     private $studentRepository;
     private $classRoomRepository;
+    private $classHistoryRepository;
 
-    public function __construct(StudentRepository $studentRepository, ClassRoomRepository $classRoomRepository)
+    public function __construct(StudentRepository $studentRepository, ClassRoomRepository $classRoomRepository, ClassHistoryRepository $classHistoryRepository)
     {
         $this->studentRepository = $studentRepository;
         $this->classRoomRepository = $classRoomRepository;
+        $this->classHistoryRepository = $classHistoryRepository;
     }
 
     /**
@@ -135,6 +138,7 @@ class StudentController
     public function deleteStudentClass($id): JsonResponse
     {
         $student = $this->studentRepository->findOneBy(['id' => $id]);
+        $this->classHistoryRepository->saveClassHistory($student, $student->getClassRoom());
         $student->setClassRoom(null);
         $this->studentRepository->updateStudentClassRoom($student);
 

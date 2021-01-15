@@ -44,6 +44,11 @@ class Exam
      */
     private $examPoints;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
     public function __construct()
     {
         $this->examPoints = new ArrayCollection();
@@ -137,6 +142,18 @@ class Exam
                 $examPoint->setExam(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

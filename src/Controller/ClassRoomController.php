@@ -74,7 +74,7 @@ class ClassRoomController
      */
     public function getAllClassRooms(): JsonResponse
     {
-        $classRooms = $this->classRoomRepository->findAll();
+        $classRooms = $this->classRoomRepository->getAllClassRooms();
         $data = [];
         foreach ($classRooms as $classRoom) {
             $guardian = $classRoom->getGuardian();

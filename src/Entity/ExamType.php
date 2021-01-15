@@ -34,6 +34,11 @@ class ExamType
      */
     private $exams;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
     public function __construct()
     {
         $this->exams = new ArrayCollection();
@@ -104,6 +109,18 @@ class ExamType
                 $exam->setExamType(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

@@ -28,6 +28,15 @@ class ClassRoomRepository extends ServiceEntityRepository
       $this->manager = $manager;
   }
 
+  public function getAllClassRooms() {
+    $query = $this->createQueryBuilder('e');
+    $query->where('e.isDeleted IS NULL');
+    $query->orWhere('e.isDeleted = false');
+    $data = $query->orderBy('e.id', 'ASC')
+        ->getQuery()->getResult();
+    return (object) $data;
+  }
+
   public function saveClassRoom($name, Teacher $teacher)
   {
       $classRoom = new ClassRoom();
@@ -56,7 +65,8 @@ class ClassRoomRepository extends ServiceEntityRepository
 
   public function removeClassRoom(ClassRoom $classRooms)
   {
-      $this->manager->remove($classRooms);
-      $this->manager->flush();
+    $classRooms->setIsDeleted(true);
+
+    $this->manager->flush();
   }
 }

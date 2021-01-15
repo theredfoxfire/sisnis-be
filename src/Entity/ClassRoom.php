@@ -38,10 +38,22 @@ class ClassRoom
      */
     private $guardian;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ClassHistory::class, mappedBy="class")
+     */
+    private $classHistories;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
     public function __construct()
     {
         $this->students = new ArrayCollection();
         $this->teacherClassToSubjects = new ArrayCollection();
+        $this->studentHistories = new ArrayCollection();
+        $this->classHistories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +151,49 @@ class ClassRoom
     public function setGuardian(?Teacher $guardian): self
     {
         $this->guardian = $guardian;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ClassHistory[]
+     */
+    public function getClassHistories(): Collection
+    {
+        return $this->classHistories;
+    }
+
+    public function addClassHistory(ClassHistory $classHistory): self
+    {
+        if (!$this->classHistories->contains($classHistory)) {
+            $this->classHistories[] = $classHistory;
+            $classHistory->setClass($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClassHistory(ClassHistory $classHistory): self
+    {
+        if ($this->classHistories->contains($classHistory)) {
+            $this->classHistories->removeElement($classHistory);
+            // set the owning side to null (unless already changed)
+            if ($classHistory->getClass() === $this) {
+                $classHistory->setClass(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

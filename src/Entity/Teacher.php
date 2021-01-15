@@ -38,6 +38,11 @@ class Teacher
      */
     private $guardianClass;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
     public function __construct()
     {
         $this->teacherClassToSubjects = new ArrayCollection();
@@ -140,6 +145,18 @@ class Teacher
                 $guardianClass->setGuardian(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

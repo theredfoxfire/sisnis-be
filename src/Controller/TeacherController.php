@@ -92,12 +92,12 @@ class TeacherController
     {
         $teachers = $this->teacherRepository->findAll();
         $data = [];
-        $guardianClass = [];
-
         foreach ($teachers as $teacher) {
+            $guardianClass = [];
             foreach ($teacher->getGuardianClass() as $key => $class) {
                 $guardianClass[] = $class->toArray();
             }
+
             $data[] = [
                 'id' => $teacher->getId(),
                 'name' => $teacher->getName(),

@@ -34,6 +34,11 @@ class AcademicYear
      */
     private $subject;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
     public function __construct()
     {
         $this->subject = new ArrayCollection();
@@ -104,6 +109,18 @@ class AcademicYear
                 $subject->setAcademicYear(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

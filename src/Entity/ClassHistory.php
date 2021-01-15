@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ExamPointRepository;
+use App\Repository\ClassHistoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ExamPointRepository::class)
+ * @ORM\Entity(repositoryClass=ClassHistoryRepository::class)
  */
-class ExamPoint
+class ClassHistory
 {
     /**
      * @ORM\Id
@@ -18,19 +18,14 @@ class ExamPoint
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=5)
+     * @ORM\ManyToOne(targetEntity=ClassRoom::class, inversedBy="classHistories")
      */
-    private $point;
+    private $class;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Student::class, inversedBy="examPoints")
+     * @ORM\ManyToOne(targetEntity=Student::class, inversedBy="classHistories")
      */
     private $student;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Exam::class, inversedBy="examPoints")
-     */
-    private $exam;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -42,14 +37,14 @@ class ExamPoint
         return $this->id;
     }
 
-    public function getPoint(): ?string
+    public function getClass(): ?ClassRoom
     {
-        return $this->point;
+        return $this->class;
     }
 
-    public function setPoint(string $point): self
+    public function setClass(?ClassRoom $class): self
     {
-        $this->point = $point;
+        $this->class = $class;
 
         return $this;
     }
@@ -62,18 +57,6 @@ class ExamPoint
     public function setStudent(?Student $student): self
     {
         $this->student = $student;
-
-        return $this;
-    }
-
-    public function getExam(): ?Exam
-    {
-        return $this->exam;
-    }
-
-    public function setExam(?Exam $exam): self
-    {
-        $this->exam = $exam;
 
         return $this;
     }
