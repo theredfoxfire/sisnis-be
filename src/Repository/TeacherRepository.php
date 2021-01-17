@@ -38,6 +38,15 @@ class TeacherRepository extends ServiceEntityRepository
       $this->manager->flush();
   }
 
+  public function getAllTeacher() {
+    $query = $this->createQueryBuilder('e');
+    $query->where('e.isDeleted IS NULL');
+    $query->orWhere('e.isDeleted = false');
+    $data = $query->orderBy('e.id', 'ASC')
+        ->getQuery()->getResult();
+    return (object) $data;
+  }
+
   public function updateTeacher(Teacher $teacher, $data)
   {
       empty($data['serial']) ? true : $teacher->setSerial($data['serial']);
@@ -48,7 +57,8 @@ class TeacherRepository extends ServiceEntityRepository
 
   public function removeTeacher(Teacher $teacher)
   {
-      $this->manager->remove($teacher);
-      $this->manager->flush();
+    $teacher->setIsDeleted(true);
+
+    $this->manager->flush();
   }
 }

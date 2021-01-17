@@ -93,12 +93,4 @@ class StudentRepository extends ServiceEntityRepository
           ->getResult();
       return (object) array('totals' => count($totals), 'data' => $data);
   }
-//TODO: add search action
-// $repository = $em->getRepository('AcmeCrawlerBundle:Trainings');
-//        $query = $repository->createQueryBuilder('p')
-//                ->where('p.title LIKE :word')
-//                ->orWhere('p.discription LIKE :word')
-//                ->setParameter('word', '%'.$word.'%')
-//                ->getQuery();
-//         $trainings = $query->getResult();
 }

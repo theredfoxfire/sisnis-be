@@ -28,7 +28,7 @@ class ClassHistoryRepository extends ServiceEntityRepository
     public function saveClassHistory(Student $student, ClassRoom $class)
     {
         $classHistory = new ClassHistory();
-
+        $classHistory->setCreatedAt(date("Y-m-d")."T".date("H:i:s").".000Z");
         $classHistory->setClass($class);
         $classHistory->setStudent($student);
 

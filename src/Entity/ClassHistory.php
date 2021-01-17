@@ -32,6 +32,11 @@ class ClassHistory
      */
     private $isDeleted;
 
+    /**
+     * @ORM\Column(type="string", length=200)
+     */
+    private $createdAt;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +74,18 @@ class ClassHistory
     public function setIsDeleted(?bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(string $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

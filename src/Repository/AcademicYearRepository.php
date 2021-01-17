@@ -55,8 +55,9 @@ class AcademicYearRepository extends ServiceEntityRepository
 
   public function removeAcademicYear(AcademicYear $academicYear)
   {
-      $this->manager->remove($academicYear);
-      $this->manager->flush();
+    $academicYear->setIsDeleted(true);
+
+    $this->manager->flush();
   }
 
   /**
@@ -68,19 +69,9 @@ class AcademicYearRepository extends ServiceEntityRepository
   public function getAllAcademicYears($start = 0, $max = 25, $name="", $haveClass="")
   {
       $query = $this->createQueryBuilder('e');
-      // if (strtoupper($haveClass) == $this->classStatus->no) {
-      //   $query->where('e.classRoom IS NULL');
-      // }
-      // if (strtoupper($haveClass) == $this->classStatus->yes) {
-      //   $query->where('e.classRoom IS NOT NULL');
-      // }
-      // if ($name != "" && $haveClass != "") {
-      //   $query->andWhere('e.name LIKE :name')->setParameter('name', $name.'%');
-      // }
-      // if ($name != "" && $haveClass == "") {
-      //   $query->where('e.name LIKE :name')->setParameter('name', $name.'%');
-      // }
       $data = $query->orderBy('e.id', 'ASC')
+          ->where('e.isDeleted IS NULL')
+          ->orWhere('e.isDeleted = false')
           ->setFirstResult($start)
           ->setMaxResults($max)
           ->getQuery()->getResult();

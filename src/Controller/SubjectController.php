@@ -61,7 +61,7 @@ class SubjectController
      */
     public function getAllSubjects(): JsonResponse
     {
-        $subjects = $this->subjectRepository->findAll();
+        $subjects = $this->subjectRepository->getAllSubject();
         $data = [];
 
         foreach ($subjects as $subject) {

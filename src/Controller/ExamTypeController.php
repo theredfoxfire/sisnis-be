@@ -61,7 +61,7 @@ class ExamTypeController
      */
     public function getAllExamTypes(): JsonResponse
     {
-        $examTypes = $this->examTypeRepository->findAll();
+        $examTypes = $this->examTypeRepository->getAllExamType();
         $data = [];
 
         foreach ($examTypes as $examType) {

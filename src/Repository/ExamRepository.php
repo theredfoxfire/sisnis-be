@@ -56,7 +56,8 @@ class ExamRepository extends ServiceEntityRepository
 
   public function removeExam(Exam $exam)
   {
-      $this->manager->remove($exam);
-      $this->manager->flush();
+    $exam->setIsDeleted(true);
+
+    $this->manager->flush();
   }
 }

@@ -90,8 +90,15 @@ class ExamController
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
         foreach ($data->studentPoints as $key => $value) {
-            $examPoint = $this->examPointRepository->findOneBy(['id' => $value['pointId']]);
-            $this->examPointRepository->updateExamPoint($examPoint, $value);
+            if (!empty($value['pointId'])) {
+                $examPoint = $this->examPointRepository->findOneBy(['id' => $value['pointId']]);
+                $this->examPointRepository->updateExamPoint($examPoint, $value);
+            } else {
+              $exam = $this->examRepository->findOneBy(['id' => $data->examId]);
+              $student = $this->studentRepository->findOneBy(['id' => $value['id']]);
+              $this->examPointRepository->saveExamPoint($value['point'], $exam, $student);
+            }
+
         }
 
         return new JsonResponse(['status' => 'Exam Updated!'], Response::HTTP_OK);
@@ -146,7 +153,9 @@ class ExamController
         $teacherSubject = $this->teacherClassToSubjectRepository->findOneBy(['id' => $id]);
         $exams = [];
         foreach ($teacherSubject->getExams() as $key => $value) {
-            $exams[$key] = array_merge($value->toArray(), $value->getExamType()->toArray());
+            if (!$value->getIsDeleted()) {
+                $exams[] = array_merge($value->toArray(), $value->getExamType()->toArray());
+            }
         }
 
         $data = [

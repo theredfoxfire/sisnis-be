@@ -62,13 +62,15 @@ class TeacherController
         $classSubjects = [];
         $guardianClass = [];
         foreach ($teacher->getTeacherClassToSubjects() as $key => $value) {
-            $classSubjects[$key] = [
-                'classToSubjectId' => $value->getId(),
-                'classRoom' => $value->getClassRoom()->toArray(),
-                'subject' => $value->getSubject()->toArray(),
-                'yearId' => empty($value->getAcademicYear()) ? "" : $value->getAcademicYear()->getId(),
-                'year' => empty($value->getAcademicYear()) ? "" :  $value->getAcademicYear()->getYear(),
-            ];
+            if (!$value->getIsDeleted()) {
+                $classSubjects[] = [
+                    'classToSubjectId' => $value->getId(),
+                    'classRoom' => $value->getClassRoom()->toArray(),
+                    'subject' => $value->getSubject()->toArray(),
+                    'yearId' => empty($value->getAcademicYear()) ? "" : $value->getAcademicYear()->getId(),
+                    'year' => empty($value->getAcademicYear()) ? "" :  $value->getAcademicYear()->getYear(),
+                ];
+            }
         }
         foreach ($teacher->getGuardianClass() as $key => $class) {
             $guardianClass[] = $class->toArray();
@@ -90,7 +92,7 @@ class TeacherController
      */
     public function getAllTeachers(): JsonResponse
     {
-        $teachers = $this->teacherRepository->findAll();
+        $teachers = $this->teacherRepository->getAllTeacher();
         $data = [];
         foreach ($teachers as $teacher) {
             $guardianClass = [];

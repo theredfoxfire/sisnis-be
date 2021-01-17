@@ -27,6 +27,15 @@ class ExamTypeRepository extends ServiceEntityRepository
       $this->manager = $manager;
   }
 
+  public function getAllExamType() {
+      $query = $this->createQueryBuilder('e');
+      $query->where('e.isDeleted IS NULL');
+      $query->orWhere('e.isDeleted = false');
+      $data = $query->orderBy('e.id', 'ASC')
+          ->getQuery()->getResult();
+      return (object) $data;
+    }
+
   public function saveExamType($examTypeData)
   {
       $examType = new ExamType();
@@ -48,7 +57,8 @@ class ExamTypeRepository extends ServiceEntityRepository
 
   public function removeExamType(ExamType $examType)
   {
-      $this->manager->remove($examType);
-      $this->manager->flush();
+    $examType->setIsDeleted(true);
+
+    $this->manager->flush();
   }
 }

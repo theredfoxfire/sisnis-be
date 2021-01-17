@@ -27,6 +27,15 @@ class SubjectRepository extends ServiceEntityRepository
       $this->manager = $manager;
   }
 
+  public function getAllSubject() {
+      $query = $this->createQueryBuilder('e');
+      $query->where('e.isDeleted IS NULL');
+      $query->orWhere('e.isDeleted = false');
+      $data = $query->orderBy('e.id', 'ASC')
+          ->getQuery()->getResult();
+      return (object) $data;
+    }
+
   public function saveSubject($subjectData)
   {
       $subject = new Subject();
@@ -48,7 +57,8 @@ class SubjectRepository extends ServiceEntityRepository
 
   public function removeSubject(Subject $subject)
   {
-      $this->manager->remove($subject);
-      $this->manager->flush();
+    $subject->setIsDeleted(true);
+
+    $this->manager->flush();
   }
 }

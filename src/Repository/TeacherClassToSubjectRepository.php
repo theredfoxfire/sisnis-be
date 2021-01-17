@@ -35,8 +35,9 @@ class TeacherClassToSubjectRepository extends ServiceEntityRepository
 
     public function removeTeacherMap(TeacherClassToSubject $teacherMap)
     {
-        $this->manager->remove($teacherMap);
-        $this->manager->flush();
+      $teacherMap->setIsDeleted(true);
+
+      $this->manager->flush();
     }
 
     // /**
