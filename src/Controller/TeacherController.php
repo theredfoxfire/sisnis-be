@@ -67,6 +67,7 @@ class TeacherController
                     'classToSubjectId' => $value->getId(),
                     'classRoom' => $value->getClassRoom()->toArray(),
                     'subject' => $value->getSubject()->toArray(),
+                    'kkm' => $value->getPassingPoint() ?? 0,
                     'yearId' => empty($value->getAcademicYear()) ? "" : $value->getAcademicYear()->getId(),
                     'year' => empty($value->getAcademicYear()) ? "" :  $value->getAcademicYear()->getYear(),
                 ];
@@ -146,6 +147,7 @@ class TeacherController
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
         $teacherMap = new TeacherClassToSubject();
+        $teacherMap->setPassingPoint($data->kkm ?? 0);
         $teacherMap->setClassRoom($this->classRoomRepository->findOneBy(['id' => $data->classRoomId]));
         $teacherMap->setSubject($this->subjectRepository->findOneBy(['id' => $data->subjectId]));
         $teacherMap->setTeacher($this->teacherRepository->findOneBy(['id' => $id]));

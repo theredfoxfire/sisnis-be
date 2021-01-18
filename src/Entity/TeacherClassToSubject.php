@@ -49,6 +49,11 @@ class TeacherClassToSubject
      */
     private $isDeleted;
 
+    /**
+     * @ORM\Column(type="string", length=4, nullable=true)
+     */
+    private $passingPoint;
+
     public function __construct()
     {
         $this->exams = new ArrayCollection();
@@ -146,6 +151,18 @@ class TeacherClassToSubject
     public function setIsDeleted(?bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getPassingPoint(): ?string
+    {
+        return $this->passingPoint;
+    }
+
+    public function setPassingPoint(?string $passingPoint): self
+    {
+        $this->passingPoint = $passingPoint;
 
         return $this;
     }

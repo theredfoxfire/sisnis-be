@@ -40,8 +40,12 @@ class StudentController
         if (empty($data->name) || empty($data->serial)) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
+        $classRoom = null;
+        if (!empty($data->classRoom)) {
+          $classRoom = $this->classRoomRepository->findOneBy(['id' => $data->classRoom]);
+        }
 
-        $this->studentRepository->saveStudent($data);
+        $this->studentRepository->saveStudent($data, $classRoom);
 
         return new JsonResponse(['status' => 'Student added!'], Response::HTTP_OK);
     }
@@ -114,6 +118,11 @@ class StudentController
     {
         $student = $this->studentRepository->findOneBy(['id' => $id]);
         $data = json_decode($request->getContent(), true);
+        $classRoom = null;
+        if (!empty($data["classRoom"])) {
+          $classRoom = $this->classRoomRepository->findOneBy(['id' => $data["classRoom"]]);
+          $student->setClassRoom($classRoom);
+        }
 
         $this->studentRepository->updateStudent($student, $data);
 
