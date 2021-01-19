@@ -36,6 +36,16 @@ class User implements UserInterface
     private $isDeleted;
 
     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isActive;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $roles;
+
+    /**
      * User constructor.
      * @param $username
      */
@@ -99,12 +109,8 @@ class User implements UserInterface
         $this->email = $email;
     }
 
-    /**
-     * @return array|string[]
-     */
-    public function getRoles()
-    {
-        return array('ROLE_USER');
+    public function getRoles(): Array {
+        return json_decode($this->roles);
     }
 
     public function eraseCredentials()
@@ -119,6 +125,30 @@ class User implements UserInterface
     public function setIsDeleted(?bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setIsActive(?bool $isActive): self
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function setRoles(?string $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }

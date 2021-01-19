@@ -13,16 +13,19 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use App\Repository\UserRepository;
 
 class AuthController extends ApiController
 {
     private $entityManager;
     private $tokenStorage;
+    private $userRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
+    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
     {
         $this->entityManager = $entityManager;
         $this->tokenStorage = $tokenStorage;
+        $this->userRepository = $userRepository;
     }
 
     public function register(Request $request, UserPasswordEncoderInterface $encoder)
@@ -41,6 +44,7 @@ class AuthController extends ApiController
         $user = new User($username);
         $user->setPassword($encoder->encodePassword($user, $password));
         $user->setEmail($email);
+        $user->setIsActive(true);
         $user->setUsername($username);
         $em->persist($user);
         $em->flush();
@@ -58,7 +62,7 @@ class AuthController extends ApiController
         $request = $this->transformJsonBody($request);
         $username = $request->get('username');
         $password = $request->get('password');
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
+        $user = $this->userRepository->findOneBy(["username" => $username, "isActive" => true]);
         if ($user) {
             $isAuthValid = $encoder->isPasswordValid($user, $password);
         }
@@ -66,7 +70,11 @@ class AuthController extends ApiController
             $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
             $this->tokenStorage->setToken($token);
         }
+        if ($isAuthValid) {
+            return new JsonResponse(['token' => $JWTManager->create($user)], Response::HTTP_OK);
+        } else {
+            return new JsonResponse(['message' => 'Auth failed.'], Response::HTTP_UNAUTHORIZED);
+        }
 
-        return new JsonResponse($isAuthValid ? ['token' => $JWTManager->create($user)] : ['message' => 'Auth failed.']);
     }
 }

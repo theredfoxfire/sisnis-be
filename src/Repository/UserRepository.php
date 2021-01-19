@@ -22,6 +22,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
+    public function getAllUser() {
+      $query = $this->createQueryBuilder('e');
+      $query->where('e.isDeleted IS NULL');
+      $query->orWhere('e.isDeleted = false');
+      $data = $query->orderBy('e.id', 'ASC')
+          ->getQuery()->getResult();
+      return (object) $data;
+    }
+
+    public function getByUsername($username) {
+      $query = $this->createQueryBuilder('e');
+      $query->where('e.isDeleted != true');
+      $query->andWhere('e.isActive = true');
+      $query->andWhere('e.email = :username')->setParameter('username', $username);
+      $data = $query->orderBy('e.id', 'ASC')
+          ->getQuery()->getResult();
+      return $data ? (object) $data[0] : null;
+    }
+
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
@@ -35,6 +54,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->persist($user);
         $this->_em->flush();
     }
+
+    public function removeTeacher(User $user)
+  {
+    $user->setIsDeleted(true);
+
+    $this->_em->flush();
+  }
+
+  public function activateUser(User $user)
+  {
+    $user->setIsActive(!$user->getIsActive());
+
+    $this->_em->flush();
+  }
 
     // /**
     //  * @return User[] Returns an array of User objects

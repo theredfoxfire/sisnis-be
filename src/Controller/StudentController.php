@@ -121,6 +121,7 @@ class StudentController
         $classRoom = null;
         if (!empty($data["classRoom"])) {
           $classRoom = $this->classRoomRepository->findOneBy(['id' => $data["classRoom"]]);
+          $student->getClassRoom() ? $this->classHistoryRepository->saveClassHistory($student, $student->getClassRoom()) : false;
           $student->setClassRoom($classRoom);
         }
 

@@ -2,6 +2,10 @@ register:
   path: /register
   controller: App\Controller\AuthController::register
   methods: POST
+add_user:
+  path: /api/user/add
+  controller: App\Controller\AuthController::register
+  methods: POST
 
 api_login_check:
   path: /api/login_check
