@@ -33,12 +33,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getByUsername($username) {
       $query = $this->createQueryBuilder('e');
-      $query->where('e.isDeleted != true');
+      $query->where('e.isDeleted = false or e.isDeleted IS NULL');
       $query->andWhere('e.isActive = true');
-      $query->andWhere('e.email = :username')->setParameter('username', $username);
+      $query->andWhere('e.username = :user')->setParameter('user', $username);
       $data = $query->orderBy('e.id', 'ASC')
           ->getQuery()->getResult();
-      return $data ? (object) $data[0] : null;
+      return $data;
     }
 
     /**
@@ -55,9 +55,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    public function removeTeacher(User $user)
+    public function removeUser(User $user)
   {
     $user->setIsDeleted(true);
+
+    $this->_em->flush();
+  }
+
+    public function setPassport(User $user)
+  {
+    $user->setIsPassportActive(true);
+    $user->setPassportAccess(uniqid().'-'.uniqid().'-'.uniqid());
+    $user->setPassportExpiry(date("Y-m-d H:i:s", time() + 86400));
 
     $this->_em->flush();
   }
@@ -68,33 +77,4 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     $this->_em->flush();
   }
-
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

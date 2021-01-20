@@ -45,6 +45,7 @@ class AuthController extends ApiController
         $user->setPassword($encoder->encodePassword($user, $password));
         $user->setEmail($email);
         $user->setIsActive(true);
+        $user->setRoles('["ROLE_ADMIN"]');
         $user->setUsername($username);
         $em->persist($user);
         $em->flush();
@@ -62,18 +63,19 @@ class AuthController extends ApiController
         $request = $this->transformJsonBody($request);
         $username = $request->get('username');
         $password = $request->get('password');
-        $user = $this->userRepository->findOneBy(["username" => $username, "isActive" => true]);
+        $user = $this->userRepository->getByUsername($username);
         if ($user) {
-            $isAuthValid = $encoder->isPasswordValid($user, $password);
+            $isAuthValid = $encoder->isPasswordValid($user[0], $password);
         }
         if ($isAuthValid) {
-            $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+            $token = new UsernamePasswordToken($user[0], null, 'main', $user[0]->getRoles());
             $this->tokenStorage->setToken($token);
         }
         if ($isAuthValid) {
-            return new JsonResponse(['token' => $JWTManager->create($user)], Response::HTTP_OK);
+            $this->userRepository->setPassport($user[0]);
+            return new JsonResponse(['token' => $JWTManager->create($user[0])], Response::HTTP_OK);
         } else {
-            return new JsonResponse(['message' => 'Auth failed.'], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(['message' => 'Login failed.'], Response::HTTP_UNAUTHORIZED);
         }
 
     }

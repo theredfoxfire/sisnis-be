@@ -36,6 +36,12 @@ class StudentRepository extends ServiceEntityRepository
 
       $student->setSerial($studentData->serial);
       $student->setName($studentData->name);
+      $student->setGender($studentData->gender);
+      $student->setBirthDay($studentData->birthDay);
+      $student->setParentName($studentData->parentName);
+      $student->setParentAddress($studentData->parentAddress);
+      $student->setCity($studentData->city);
+      $student->setReligion($studentData->religion);
       if ($classRoom) {
         $student->setClassRoom($classRoom);
       }
@@ -44,10 +50,16 @@ class StudentRepository extends ServiceEntityRepository
       $this->manager->flush();
   }
 
-  public function updateStudent(Student $student, $data)
+  public function updateStudent(Student $student, $studentData)
   {
-      empty($data['serial']) ? true : $student->setSerial($data['serial']);
-      empty($data['name']) ? true : $student->setName($data['name']);
+      empty($data->serial) ? true : $student->setSerial($studentData->serial);
+      empty($data->name) ? true : $student->setName($studentData->name);
+      empty($data->gender) ? true : $student->setGender($studentData->gender);
+      empty($data->birthDay) ? true : $student->setBirthDay($studentData->birthDay);
+      empty($data->parentName) ? true : $student->setParentName($studentData->parentName);
+      empty($data->parentAddress) ? true : $student->setParentAddress($studentData->parentAddress);
+      empty($data->city) ? true : $student->setCity($studentData->city);
+      empty($data->religion) ? true : $student->setReligion($studentData->religion);
 
       $this->manager->flush();
   }

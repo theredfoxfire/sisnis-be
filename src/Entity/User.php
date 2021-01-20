@@ -26,7 +26,7 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=45)
+     * @ORM\Column(type="string", length=45, unique=true)
      */
     private $email;
 
@@ -41,9 +41,24 @@ class User implements UserInterface
     private $isActive;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $roles;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $passportAccess;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $passportExpiry;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isPassportActive;
 
     /**
      * User constructor.
@@ -149,6 +164,42 @@ class User implements UserInterface
     public function setRoles(?string $roles): self
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getPassportAccess(): ?string
+    {
+        return $this->passportAccess;
+    }
+
+    public function setPassportAccess(?string $passportAccess): self
+    {
+        $this->passportAccess = $passportAccess;
+
+        return $this;
+    }
+
+    public function getPassportExpiry(): ?string
+    {
+        return $this->passportExpiry;
+    }
+
+    public function setPassportExpiry(?string $passportExpiry): self
+    {
+        $this->passportExpiry = $passportExpiry;
+
+        return $this;
+    }
+
+    public function getIsPassportActive(): ?bool
+    {
+        return $this->isPassportActive;
+    }
+
+    public function setIsPassportActive(?bool $isPassportActive): self
+    {
+        $this->isPassportActive = $isPassportActive;
 
         return $this;
     }

@@ -48,10 +48,39 @@ class Student
      */
     private $isDeleted;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $gender;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $birthDay;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $parentName;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $parentAddress;
+
+    /**
+     * @ORM\Column(type="string", length=55, nullable=true)
+     */
+    private $city;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $religion;
+
     public function __construct()
     {
         $this->examPoints = new ArrayCollection();
-        $this->classHistory = new ArrayCollection();
         $this->classHistories = new ArrayCollection();
     }
 
@@ -144,29 +173,6 @@ class Student
         return $this->classHistories;
     }
 
-    public function addClassHistory(ClassHistory $classHistory): self
-    {
-        if (!$this->classHistories->contains($classHistory)) {
-            $this->classHistories[] = $classHistory;
-            $classHistory->setStudent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeClassHistory(ClassHistory $classHistory): self
-    {
-        if ($this->classHistories->contains($classHistory)) {
-            $this->classHistories->removeElement($classHistory);
-            // set the owning side to null (unless already changed)
-            if ($classHistory->getStudent() === $this) {
-                $classHistory->setStudent(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getIsDeleted(): ?bool
     {
         return $this->isDeleted;
@@ -175,6 +181,78 @@ class Student
     public function setIsDeleted(?bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(?string $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    public function getBirthDay(): ?string
+    {
+        return $this->birthDay;
+    }
+
+    public function setBirthDay(?string $birthDay): self
+    {
+        $this->birthDay = $birthDay;
+
+        return $this;
+    }
+
+    public function getParentName(): ?string
+    {
+        return $this->parentName;
+    }
+
+    public function setParentName(?string $parentName): self
+    {
+        $this->parentName = $parentName;
+
+        return $this;
+    }
+
+    public function getParentAddress(): ?string
+    {
+        return $this->parentAddress;
+    }
+
+    public function setParentAddress(?string $parentAddress): self
+    {
+        $this->parentAddress = $parentAddress;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getReligion(): ?string
+    {
+        return $this->religion;
+    }
+
+    public function setReligion(?string $religion): self
+    {
+        $this->religion = $religion;
 
         return $this;
     }

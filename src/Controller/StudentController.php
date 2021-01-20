@@ -63,6 +63,12 @@ class StudentController
             'serial' => $student->getSerial(),
             'classId' => $classRoom ? $classRoom->getId() : 0,
             'className' => $classRoom ? $classRoom->getName() : '',
+            'gender' => $student->getGender(),
+     'birthDay' => $student->getBirthDay(),
+      'parentName' => $student->getParentName(),
+      'city' => $student->getCity(),
+      'parentAddress' => $student->getParentAddress(),
+      'religion' => $student->getReligion(),
         ];
 
         return new JsonResponse(['student' => $data], Response::HTTP_OK);
@@ -117,10 +123,10 @@ class StudentController
     public function updateStudent($id, Request $request): JsonResponse
     {
         $student = $this->studentRepository->findOneBy(['id' => $id]);
-        $data = json_decode($request->getContent(), true);
+        $data = (object)json_decode($request->getContent(), true);
         $classRoom = null;
-        if (!empty($data["classRoom"])) {
-          $classRoom = $this->classRoomRepository->findOneBy(['id' => $data["classRoom"]]);
+        if (!empty($data->classRoom)) {
+          $classRoom = $this->classRoomRepository->findOneBy(['id' => $data->classRoom]);
           $student->getClassRoom() ? $this->classHistoryRepository->saveClassHistory($student, $student->getClassRoom()) : false;
           $student->setClassRoom($classRoom);
         }
