@@ -54,9 +54,15 @@ class TeacherClassToSubject
      */
     private $passingPoint;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Schedule::class, mappedBy="subject")
+     */
+    private $schedules;
+
     public function __construct()
     {
         $this->exams = new ArrayCollection();
+        $this->schedules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,6 +169,37 @@ class TeacherClassToSubject
     public function setPassingPoint(?string $passingPoint): self
     {
         $this->passingPoint = $passingPoint;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Schedule[]
+     */
+    public function getSchedules(): Collection
+    {
+        return $this->schedules;
+    }
+
+    public function addSchedule(Schedule $schedule): self
+    {
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules[] = $schedule;
+            $schedule->setSubject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): self
+    {
+        if ($this->schedules->contains($schedule)) {
+            $this->schedules->removeElement($schedule);
+            // set the owning side to null (unless already changed)
+            if ($schedule->getSubject() === $this) {
+                $schedule->setSubject(null);
+            }
+        }
 
         return $this;
     }
