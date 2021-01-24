@@ -77,7 +77,7 @@ class ClassRoom
     {
         return [
             'id' => $this->getId(),
-            'name' => $this->getName(),
+            'name' => ucfirst($this->getName()),
         ];
     }
 

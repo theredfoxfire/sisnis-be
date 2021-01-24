@@ -32,6 +32,16 @@ class Schedule
      */
     private $subject;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $day;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isDeleted;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +79,30 @@ class Schedule
     public function setSubject(?TeacherClassToSubject $subject): self
     {
         $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getDay(): ?string
+    {
+        return $this->day;
+    }
+
+    public function setDay(?string $day): self
+    {
+        $this->day = $day;
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

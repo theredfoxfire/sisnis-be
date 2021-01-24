@@ -83,7 +83,7 @@ class Teacher
         return [
             'id' => $this->getId(),
             'serial' => $this->getSerial(),
-            'name' => $this->getName(),
+            'name' => ucfirst($this->getName()),
         ];
     }
 

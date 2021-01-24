@@ -98,4 +98,12 @@ class TimeSlot
 
         return $this;
     }
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'time' => $this->getTime(),
+            'isDeleted' => $this->getIsDeleted(),
+        ];
+    }
 }

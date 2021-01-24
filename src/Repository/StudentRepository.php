@@ -105,6 +105,8 @@ class StudentRepository extends ServiceEntityRepository
           ->getQuery()->getResult();
 
       $totals = $this->createQueryBuilder('e')
+      ->where('e.isDeleted IS NULL')
+      ->orWhere('e.isDeleted = false')
           ->getQuery()
           ->getResult();
       return (object) array('totals' => count($totals), 'data' => $data);

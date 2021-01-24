@@ -98,4 +98,13 @@ class Room
 
         return $this;
     }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'isDeleted' => $this->getIsDeleted(),
+        ];
+    }
 }

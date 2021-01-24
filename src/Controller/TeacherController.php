@@ -111,6 +111,27 @@ class TeacherController
 
         return new JsonResponse(['teachers' => $data], Response::HTTP_OK);
     }
+    /**
+     * @Route("/get-all/subject", name="get_all_teachers_subject", methods={"GET"})
+     */
+    public function getAllTeacherSubject(): JsonResponse
+    {
+        $teachers = $this->teacherMapRepository->findAll();
+        $data = [];
+        foreach ($teachers as $item) {
+          $subject = $item->getSubject();
+          $classRoom = $item->getClassRoom();
+          $teacher = $item->getTeacher();
+            $data[] = [
+                'id' => $item->getId(),
+                'subject' => $subject->toArray() ?? [],
+                'classRoom' => $classRoom->toArray() ?? [],
+                'teacher' => $teacher->toArray() ?? [],
+            ];
+        }
+
+        return new JsonResponse(['teacherSubject' => $data], Response::HTTP_OK);
+    }
 
     /**
      * @Route("/update/{id}", name="update_teacher", methods={"PUT"})
