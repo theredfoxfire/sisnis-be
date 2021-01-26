@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ScheduleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,6 +43,36 @@ class Schedule
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $isDeleted;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $classRoomName;
+
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $academicYear;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $teacherName;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $subjectName;
+
+    /**
+     * @ORM\OneToMany(targetEntity=StudentAttendance::class, mappedBy="schedule")
+     */
+    private $studentAttendances;
+
+    public function __construct()
+    {
+        $this->studentAttendances = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,6 +135,99 @@ class Schedule
     public function setIsDeleted(?bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getClassRoomName(): ?string
+    {
+        return $this->classRoomName;
+    }
+
+    public function setClassRoomName(?string $classRoomName): self
+    {
+        $this->classRoomName = $classRoomName;
+
+        return $this;
+    }
+
+    public function getAcademicYear(): ?string
+    {
+        return $this->academicYear;
+    }
+
+    public function setAcademicYear(?string $academicYear): self
+    {
+        $this->academicYear = $academicYear;
+
+        return $this;
+    }
+
+    public function getTeacherName(): ?string
+    {
+        return $this->teacherName;
+    }
+
+    public function setTeacherName(?string $teacherName): self
+    {
+        $this->teacherName = $teacherName;
+
+        return $this;
+    }
+
+    public function getSubjectName(): ?string
+    {
+        return $this->subjectName;
+    }
+
+    public function setSubjectName(?string $subjectName): self
+    {
+        $this->subjectName = $subjectName;
+
+        return $this;
+    }
+
+
+    public function toArray()
+      {
+          return [
+              'id' => $this->getId(),
+              'day' => $this->getDay(),
+              'isDeleted' => $this->getIsDeleted(),
+              'classRoomName' => $this->getClassRoomName(),
+              'academicYear' => $this->getAcademicYear(),
+              'teacherName' => $this->getTeacherName(),
+              'subjectName' => $this->getSubjectName(),
+          ];
+      }
+
+    /**
+     * @return Collection|StudentAttendance[]
+     */
+    public function getStudentAttendances(): Collection
+    {
+        return $this->studentAttendances;
+    }
+
+    public function addStudentAttendance(StudentAttendance $studentAttendance): self
+    {
+        if (!$this->studentAttendances->contains($studentAttendance)) {
+            $this->studentAttendances[] = $studentAttendance;
+            $studentAttendance->setSchedule($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudentAttendance(StudentAttendance $studentAttendance): self
+    {
+        if ($this->studentAttendances->contains($studentAttendance)) {
+            $this->studentAttendances->removeElement($studentAttendance);
+            // set the owning side to null (unless already changed)
+            if ($studentAttendance->getSchedule() === $this) {
+                $studentAttendance->setSchedule(null);
+            }
+        }
 
         return $this;
     }

@@ -1,0 +1,110 @@
+<?php
+
+namespace App\Controller;
+
+use App\Repository\StudentAttendanceRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * Class StudentAttendanceSiteController
+ * @package App\Controller
+ *
+ * @Route(path="/api/studentAttendance")
+ */
+class StudentAttendanceController
+{
+    private $studentAttendanceRepository;
+
+    public function __construct(StudentAttendanceRepository $studentAttendanceRepository)
+    {
+        $this->studentAttendanceRepository = $studentAttendanceRepository;
+    }
+
+    /**
+     * @Route("/add", name="add_studentAttendance", methods={"POST"})
+     */
+    public function addStudentAttendance(Request $request): JsonResponse
+    {
+        $data = (object)json_decode($request->getContent(), true);
+
+        if (empty($data->student) || empty($data->schedule) || empty($data->student) || empty($data->presenceStatus) || empty($data->notes)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+
+        $this->studentAttendanceRepository->saveStudentAttendance($data);
+
+        return new JsonResponse(['status' => 'StudentAttendance added!'], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/get/{id}", name="get_one_studentAttendance", methods={"GET"})
+     */
+    public function getOneStudentAttendance($id): JsonResponse
+    {
+        $studentAttendance = $this->studentAttendanceRepository->findOneBy(['id' => $id]);
+
+        $data = [
+            'id' => $studentAttendance->getId(),
+            'student' => $studentAttendance->getStudent()->toArray(),
+            'schedule' => $studentAttendance->getSchedule()->toArray(),
+            'presenceStatus' => $studentAttendance->getPresenceStatus(),
+            'notes' => $studentAttendance->getNotes(),
+        ];
+
+        return new JsonResponse(['studentAttendance' => $data], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/get-all", name="get_all_studentAttendances", methods={"GET"})
+     */
+    public function getAllStudentAttendances(): JsonResponse
+    {
+        $studentAttendances = $this->studentAttendanceRepository->getAllStudentAttendance();
+        $data = [];
+
+        foreach ($studentAttendances as $studentAttendance) {
+            $data[] = [
+                'id' => $studentAttendance->getId(),
+                'student' => $studentAttendance->getStudent()->toArray(),
+                'schedule' => $studentAttendance->getSchedule()->toArray(),
+                'presenceStatus' => $studentAttendance->getPresenceStatus(),
+                'notes' => $studentAttendance->getNotes(),
+            ];
+        }
+
+        return new JsonResponse(['studentAttendances' => $data], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/update/{id}", name="update_studentAttendance", methods={"PUT"})
+     */
+    public function updateStudentAttendance($id, Request $request): JsonResponse
+    {
+        $studentAttendance = $this->studentAttendanceRepository->findOneBy(['id' => $id]);
+        $data = (object)json_decode($request->getContent(), true);
+
+        if (empty($data->student) || empty($data->schedule) || empty($data->student) || empty($data->presenceStatus) || empty($data->notes)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+
+        $this->studentAttendanceRepository->updateStudentAttendance($studentAttendance, $data);
+
+        return new JsonResponse(['status' => 'studentAttendance updated!'], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/delete/{id}", name="delete_studentAttendance", methods={"DELETE"})
+     */
+    public function deleteStudentAttendance($id): JsonResponse
+    {
+        $studentAttendance = $this->studentAttendanceRepository->findOneBy(['id' => $id]);
+
+        $this->studentAttendanceRepository->removeStudentAttendance($studentAttendance);
+
+        return new JsonResponse(['status' => 'studentAttendance deleted'], Response::HTTP_OK);
+    }
+}

@@ -60,10 +60,18 @@ class ScheduleRepository extends ServiceEntityRepository
   public function saveSchedule(Room $room, TimeSlot $timeSlot, TeacherClassToSubject $teacherSubject, String $day)
   {
       $schedule = new Schedule();
+      $teacher = $teacherSubject->getTeacher();
+      $classRoom = $teacherSubject->getClassRoom();
+      $subjectItem = $teacherSubject->getSubject();
+      $academicYear = $teacherSubject->getAcademicYear();
       $schedule->setRoom($room);
       $schedule->setTimeSlot($timeSlot);
       $schedule->setDay($day);
       $schedule->setSubject($teacherSubject);
+      $schedule->setTeacherName($teacher->getName());
+      $schedule->setSubjectName($subjectItem->getName());
+      $schedule->setClassRoomName($classRoom->getName());
+      $schedule->setAcademicYear($academicYear->getYear());
 
       $this->manager->persist($schedule);
       $this->manager->flush();

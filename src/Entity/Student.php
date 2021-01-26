@@ -78,10 +78,16 @@ class Student
      */
     private $religion;
 
+    /**
+     * @ORM\OneToMany(targetEntity=StudentAttendance::class, mappedBy="student")
+     */
+    private $studentAttendances;
+
     public function __construct()
     {
         $this->examPoints = new ArrayCollection();
         $this->classHistories = new ArrayCollection();
+        $this->studentAttendances = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -253,6 +259,37 @@ class Student
     public function setReligion(?string $religion): self
     {
         $this->religion = $religion;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|StudentAttendance[]
+     */
+    public function getStudentAttendances(): Collection
+    {
+        return $this->studentAttendances;
+    }
+
+    public function addStudentAttendance(StudentAttendance $studentAttendance): self
+    {
+        if (!$this->studentAttendances->contains($studentAttendance)) {
+            $this->studentAttendances[] = $studentAttendance;
+            $studentAttendance->setStudent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudentAttendance(StudentAttendance $studentAttendance): self
+    {
+        if ($this->studentAttendances->contains($studentAttendance)) {
+            $this->studentAttendances->removeElement($studentAttendance);
+            // set the owning side to null (unless already changed)
+            if ($studentAttendance->getStudent() === $this) {
+                $studentAttendance->setStudent(null);
+            }
+        }
 
         return $this;
     }
