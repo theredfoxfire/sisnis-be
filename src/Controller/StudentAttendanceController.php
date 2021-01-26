@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\StudentAttendanceRepository;
+use App\Repository\ScheduleRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class StudentAttendanceController
 {
     private $studentAttendanceRepository;
+    private $scheduleRepository;
 
-    public function __construct(StudentAttendanceRepository $studentAttendanceRepository)
+    public function __construct(StudentAttendanceRepository $studentAttendanceRepository, ScheduleRepository $scheduleRepository)
     {
         $this->studentAttendanceRepository = $studentAttendanceRepository;
+        $this->scheduleRepository = $scheduleRepository;
     }
 
     /**
@@ -53,17 +56,19 @@ class StudentAttendanceController
             'schedule' => $studentAttendance->getSchedule()->toArray(),
             'presenceStatus' => $studentAttendance->getPresenceStatus(),
             'notes' => $studentAttendance->getNotes(),
+            'date' => $studentAttendance->getDate(),
         ];
 
         return new JsonResponse(['studentAttendance' => $data], Response::HTTP_OK);
     }
 
     /**
-     * @Route("/get-all", name="get_all_studentAttendances", methods={"GET"})
+     * @Route("/get-all/{scheduleId}", name="get_all_studentAttendances", methods={"GET"})
      */
-    public function getAllStudentAttendances(): JsonResponse
+    public function getAllStudentAttendances($scheduleId): JsonResponse
     {
-        $studentAttendances = $this->studentAttendanceRepository->getAllStudentAttendance();
+        $schedule = $this->scheduleRepository->findOneBy(['id' => $scheduleId]);
+        $studentAttendances = $this->studentAttendanceRepository->getAllStudentAttendance($schedule);
         $data = [];
 
         foreach ($studentAttendances as $studentAttendance) {
@@ -73,6 +78,7 @@ class StudentAttendanceController
                 'schedule' => $studentAttendance->getSchedule()->toArray(),
                 'presenceStatus' => $studentAttendance->getPresenceStatus(),
                 'notes' => $studentAttendance->getNotes(),
+                'date' => $studentAttendance->getDate(),
             ];
         }
 

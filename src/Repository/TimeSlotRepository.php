@@ -15,47 +15,46 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class TimeSlotRepository extends ServiceEntityRepository
 {
-  private $manager;
+    private $manager;
 
-  public function __construct
-  (
-      ManagerRegistry $registry,
-      EntityManagerInterface $manager
-  )
-  {
-      parent::__construct($registry, TimeSlot::class);
-      $this->manager = $manager;
-  }
-
-  public function getAllTimeSlot() {
-      $query = $this->createQueryBuilder('e');
-      $query->where('e.isDeleted IS NULL');
-      $query->orWhere('e.isDeleted = false');
-      $data = $query->orderBy('e.id', 'ASC')
-          ->getQuery()->getResult();
-      return (object) $data;
+    public function __construct(
+        ManagerRegistry $registry,
+        EntityManagerInterface $manager
+    ) {
+        parent::__construct($registry, TimeSlot::class);
+        $this->manager = $manager;
     }
 
-  public function saveTimeSlot($timeSlotData)
-  {
-      $timeSlot = new TimeSlot();
-      $timeSlot->setTime($timeSlotData->time);
+    public function getAllTimeSlot()
+    {
+        $query = $this->createQueryBuilder('e');
+        $query->where('e.isDeleted IS NULL');
+        $query->orWhere('e.isDeleted = false');
+        $data = $query->orderBy('e.id', 'ASC')
+          ->getQuery()->getResult();
+        return (object) $data;
+    }
 
-      $this->manager->persist($timeSlot);
-      $this->manager->flush();
-  }
+    public function saveTimeSlot($timeSlotData)
+    {
+        $timeSlot = new TimeSlot();
+        $timeSlot->setTime($timeSlotData->time);
 
-  public function updateTimeSlot(TimeSlot $timeSlot, $data)
-  {
-      empty($data->time) ? true : $timeSlot->setTime($data->time);
+        $this->manager->persist($timeSlot);
+        $this->manager->flush();
+    }
 
-      $this->manager->flush();
-  }
+    public function updateTimeSlot(TimeSlot $timeSlot, $data)
+    {
+        empty($data->time) ? true : $timeSlot->setTime($data->time);
 
-  public function removeTimeSlot(TimeSlot $timeSlot)
-  {
-    $timeSlot->setIsDeleted(true);
+        $this->manager->flush();
+    }
 
-    $this->manager->flush();
-  }
+    public function removeTimeSlot(TimeSlot $timeSlot)
+    {
+        $timeSlot->setIsDeleted(true);
+
+        $this->manager->flush();
+    }
 }

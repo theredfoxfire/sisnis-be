@@ -42,6 +42,11 @@ class StudentAttendance
      */
     private $isDeleted;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $date;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,5 +110,29 @@ class StudentAttendance
         $this->isDeleted = $isDeleted;
 
         return $this;
+    }
+
+    public function getDate(): ?string
+    {
+        return $this->date;
+    }
+
+    public function setDate(?string $date): self
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'date' => $this->getDate(),
+            'schedule' => $this->getSchedule()->toArray(),
+            'student' => $this->getStudent()->toArray(),
+            'notes' => $this->getNotes(),
+            'presenceStatus' => $this->getPresenceStatus(),
+        ];
     }
 }

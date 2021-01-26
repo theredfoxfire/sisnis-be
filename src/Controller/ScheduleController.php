@@ -65,13 +65,22 @@ class ScheduleController
     public function getOneSchedule($id): JsonResponse
     {
         $schedule = $this->scheduleRepository->findOneBy(['id' => $id]);
-
+        $studentsMap = $schedule->getSubject()->getClassRoom()->getStudents();
+        $students = [];
+        foreach ($studentsMap as $key => $value) {
+            $students[] = $value->toArray();
+        }
         $data = [
             'id' => $schedule->getId(),
             'time' => $schedule->getTimeSlot()->getid(),
             'day' => $schedule->getDay(),
             'room' => $schedule->getRoom()->getId(),
             'subject' => $schedule->getSubject()->getId(),
+            'classRoomName' => $schedule->getClassRoomName(),
+            'subjectName' => $schedule->getSubjectName(),
+            'teacherName' => $schedule->getTeacherName(),
+            'academicYear' => $schedule->getAcademicYear(),
+            'students' => $students,
         ];
 
         return new JsonResponse(['schedule' => $data], Response::HTTP_OK);
