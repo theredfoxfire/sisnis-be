@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\StudentAttendanceRepository;
 use App\Repository\ScheduleRepository;
+use App\Repository\StudentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,11 +21,13 @@ class StudentAttendanceController
 {
     private $studentAttendanceRepository;
     private $scheduleRepository;
+    private $studentRepository;
 
-    public function __construct(StudentAttendanceRepository $studentAttendanceRepository, ScheduleRepository $scheduleRepository)
+    public function __construct(StudentRepository $studentRepository, StudentAttendanceRepository $studentAttendanceRepository, ScheduleRepository $scheduleRepository)
     {
         $this->studentAttendanceRepository = $studentAttendanceRepository;
         $this->scheduleRepository = $scheduleRepository;
+        $this->studentRepository = $studentRepository;
     }
 
     /**
@@ -34,11 +37,18 @@ class StudentAttendanceController
     {
         $data = (object)json_decode($request->getContent(), true);
 
-        if (empty($data->student) || empty($data->schedule) || empty($data->student) || empty($data->presenceStatus) || empty($data->notes)) {
+        if (empty($data->students) || empty($data->date)) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
 
-        $this->studentAttendanceRepository->saveStudentAttendance($data);
+        foreach ($data->students as $key => $value) {
+            $item = (object)$value;
+            $student = $this->studentRepository->findOneBy(['id' => $item->student]);
+            $schedule = $this->scheduleRepository->findOneBy(['id' => $item->schedule]);
+            if ($student && $schedule) {
+                $this->studentAttendanceRepository->saveStudentAttendance($item, $schedule, $student, $data->date);
+            }
+        }
 
         return new JsonResponse(['status' => 'StudentAttendance added!'], Response::HTTP_OK);
     }

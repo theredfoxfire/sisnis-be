@@ -38,13 +38,14 @@ class StudentAttendanceRepository extends ServiceEntityRepository
         return (object) $data;
     }
 
-    public function saveStudentAttendance($studentAttendanceData, Schedule $schedule, Student $student)
+    public function saveStudentAttendance($studentAttendanceData, Schedule $schedule, Student $student, $date)
     {
         $studentAttendance = new StudentAttendance();
         $studentAttendance->setStudent($student);
         $studentAttendance->setPresenceStatus($studentAttendanceData->presenceStatus);
         $studentAttendance->setSchedule($schedule);
         $studentAttendance->setNotes($studentAttendanceData->notes);
+        $studentAttendance->setDate($date);
 
         $this->manager->persist($studentAttendance);
         $this->manager->flush();
