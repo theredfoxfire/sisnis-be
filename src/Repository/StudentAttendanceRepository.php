@@ -51,10 +51,11 @@ class StudentAttendanceRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
-    public function updateStudentAttendance(StudentAttendance $studentAttendance, $data)
+    public function updateStudentAttendance(StudentAttendance $studentAttendance, $formData, Schedule $schedule, Student $student, $date)
     {
-        $studentAttendance->setPresenceStatus($data->presenceStatus);
-        $studentAttendance->setNotes($data->notes);
+        $studentAttendance->setNotes($formData->notes);
+        $studentAttendance->setPresenceStatus($formData->presenceStatus);
+        $studentAttendance->setDate($date);
 
         $this->manager->flush();
     }

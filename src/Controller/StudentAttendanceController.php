@@ -45,7 +45,11 @@ class StudentAttendanceController
             $item = (object)$value;
             $student = $this->studentRepository->findOneBy(['id' => $item->student]);
             $schedule = $this->scheduleRepository->findOneBy(['id' => $item->schedule]);
-            if ($student && $schedule) {
+            if (!empty($item->id)) {
+                $studentAttendance = $this->studentAttendanceRepository->findOneBy(['id' => $item->id]);
+                $this->studentAttendanceRepository->updateStudentAttendance($studentAttendance, $item, $schedule, $student, $data->date);
+            }
+            if ($student && $schedule && empty($item->id)) {
                 $this->studentAttendanceRepository->saveStudentAttendance($item, $schedule, $student, $data->date);
             }
         }
@@ -84,8 +88,8 @@ class StudentAttendanceController
         foreach ($studentAttendances as $studentAttendance) {
             $data[] = [
                 'id' => $studentAttendance->getId(),
-                'student' => $studentAttendance->getStudent()->toArray(),
-                'schedule' => $studentAttendance->getSchedule()->toArray(),
+                'student' => $studentAttendance->getStudent()->getId(),
+                'schedule' => $studentAttendance->getSchedule()->getId(),
                 'presenceStatus' => $studentAttendance->getPresenceStatus(),
                 'notes' => $studentAttendance->getNotes(),
                 'date' => $studentAttendance->getDate(),
@@ -96,7 +100,7 @@ class StudentAttendanceController
     }
 
     /**
-     * @Route("/update/{id}", name="update_studentAttendance", methods={"PUT"})
+     * @Route("/update", name="update_studentAttendance", methods={"PUT"})
      */
     public function updateStudentAttendance($id, Request $request): JsonResponse
     {
