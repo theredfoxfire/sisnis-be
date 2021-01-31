@@ -45,11 +45,12 @@ class StudentAttendanceController
             $item = (object)$value;
             $student = $this->studentRepository->findOneBy(['id' => $item->student]);
             $schedule = $this->scheduleRepository->findOneBy(['id' => $item->schedule]);
+            $isExist = $studentAttendances = $this->studentAttendanceRepository->getAllStudentAttendance($schedule, $data->date);
             if (!empty($item->id)) {
                 $studentAttendance = $this->studentAttendanceRepository->findOneBy(['id' => $item->id]);
                 $this->studentAttendanceRepository->updateStudentAttendance($studentAttendance, $item, $schedule, $student, $data->date);
             }
-            if ($student && $schedule && empty($item->id)) {
+            if ($student && $schedule && empty($item->id) && empty($isExist)) {
                 $this->studentAttendanceRepository->saveStudentAttendance($item, $schedule, $student, $data->date);
             }
         }
@@ -83,6 +84,29 @@ class StudentAttendanceController
     {
         $schedule = $this->scheduleRepository->findOneBy(['id' => $scheduleId]);
         $studentAttendances = $this->studentAttendanceRepository->getAllStudentAttendance($schedule);
+        $data = [];
+
+        foreach ($studentAttendances as $studentAttendance) {
+            $data[] = [
+                'id' => $studentAttendance->getId(),
+                'student' => $studentAttendance->getStudent()->getId(),
+                'schedule' => $studentAttendance->getSchedule()->getId(),
+                'presenceStatus' => $studentAttendance->getPresenceStatus(),
+                'notes' => $studentAttendance->getNotes(),
+                'date' => $studentAttendance->getDate(),
+            ];
+        }
+
+        return new JsonResponse(['studentAttendances' => $data], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/get-all/{scheduleId}/{date}", name="get_all_studentAttendances", methods={"GET"})
+     */
+    public function getAllAttendancesByDate($scheduleId, $date): JsonResponse
+    {
+        $schedule = $this->scheduleRepository->findOneBy(['id' => $scheduleId]);
+        $studentAttendances = $this->studentAttendanceRepository->getAllStudentAttendance($schedule, $date);
         $data = [];
 
         foreach ($studentAttendances as $studentAttendance) {

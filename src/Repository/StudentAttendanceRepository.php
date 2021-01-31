@@ -27,12 +27,17 @@ class StudentAttendanceRepository extends ServiceEntityRepository
         $this->manager = $manager;
     }
 
-    public function getAllStudentAttendance(Schedule $schedule)
+    public function getAllStudentAttendance(Schedule $schedule, $date)
     {
         $query = $this->createQueryBuilder('e');
         $query->where('e.isDeleted IS NULL');
         $query->orWhere('e.isDeleted = false');
         $query->andWhere('e.schedule = :schedule')->setParameter("schedule", $schedule);
+        if (!empty($date && $date != 0)) {
+            $query->andWhere('e.date = :date')->setParameter("date", $date);
+        } else {
+            $query->groupby('e.date');
+        }
         $data = $query->orderBy('e.id', 'ASC')
           ->getQuery()->getResult();
         return (object) $data;
