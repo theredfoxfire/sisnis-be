@@ -42,6 +42,17 @@ class StudentAttendanceRepository extends ServiceEntityRepository
           ->getQuery()->getResult();
         return (object) $data;
     }
+    public function checkIsExist(Schedule $schedule, $date)
+    {
+        $query = $this->createQueryBuilder('e');
+        $query->where('e.isDeleted IS NULL');
+        $query->orWhere('e.isDeleted = false');
+        $query->andWhere('e.schedule = :schedule')->setParameter("schedule", $schedule);
+        $query->andWhere('e.date = :date')->setParameter("date", $date);
+            $data = $query->orderBy('e.id', 'ASC')
+          ->getQuery()->getResult();
+        return !empty($data[0]);
+    }
 
     public function saveStudentAttendance($studentAttendanceData, Schedule $schedule, Student $student, $date)
     {

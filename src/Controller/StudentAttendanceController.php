@@ -40,17 +40,21 @@ class StudentAttendanceController
         if (empty($data->students) || empty($data->date)) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
-
+        $schedule = $this->scheduleRepository->findOneBy(['id' => $data->students[0]['schedule']]);
+        $isExist = $this->studentAttendanceRepository->checkIsExist($schedule, $data->date);
+        if (empty($data->students[0]['id']) && $isExist) {
+            throw new NotFoundHttpException('Date attendance already exist!');
+        }
         foreach ($data->students as $key => $value) {
             $item = (object)$value;
             $student = $this->studentRepository->findOneBy(['id' => $item->student]);
             $schedule = $this->scheduleRepository->findOneBy(['id' => $item->schedule]);
-            $isExist = $studentAttendances = $this->studentAttendanceRepository->getAllStudentAttendance($schedule, $data->date);
             if (!empty($item->id)) {
                 $studentAttendance = $this->studentAttendanceRepository->findOneBy(['id' => $item->id]);
                 $this->studentAttendanceRepository->updateStudentAttendance($studentAttendance, $item, $schedule, $student, $data->date);
             }
-            if ($student && $schedule && empty($item->id) && empty($isExist)) {
+
+            if ($student && $schedule && empty($item->id)) {
                 $this->studentAttendanceRepository->saveStudentAttendance($item, $schedule, $student, $data->date);
             }
         }
