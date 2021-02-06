@@ -42,8 +42,15 @@ class StudentAttendanceController
         }
         $schedule = $this->scheduleRepository->findOneBy(['id' => $data->students[0]['schedule']]);
         $isExist = $this->studentAttendanceRepository->checkIsExist($schedule, $data->date);
+
         if (empty($data->students[0]['id']) && $isExist) {
             throw new NotFoundHttpException('Date attendance already exist!');
+        }
+        if (!empty($data->students[0]['id'])) {
+            $studentAttendance = $this->studentAttendanceRepository->findOneBy(['id' => $data->students[0]['id']]);
+            if ($studentAttendance->getDate() !== $data->date && $isExist) {
+                throw new NotFoundHttpException('Date attendance already exist!');
+            }
         }
         foreach ($data->students as $key => $value) {
             $item = (object)$value;

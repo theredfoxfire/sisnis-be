@@ -72,7 +72,8 @@ class ScheduleController
         }
         $data = [
             'id' => $schedule->getId(),
-            'time' => $schedule->getTimeSlot()->getid(),
+            'time' => $schedule->getTimeSlot()->getId(),
+            'timeString' => $schedule->getTimeSlot()->getTime(),
             'day' => $schedule->getDay(),
             'room' => $schedule->getRoom()->getId(),
             'subject' => $schedule->getSubject()->getId(),
