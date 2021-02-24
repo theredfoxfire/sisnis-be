@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * Class UserSiteController
@@ -41,11 +42,11 @@ class UserController
     }
 
     /**
-     * @Route("/get-all", name="get_all_users", methods={"GET"})
+     * @Route("/get-all/{role}", name="get_all_users", methods={"GET"})
      */
-    public function getAllUsers(): JsonResponse
+    public function getAllUsers($role): JsonResponse
     {
-        $users = $this->userRepository->getAllUser();
+        $users = $this->userRepository->getAllUser($role);
         $data = [];
 
         foreach ($users as $user) {
@@ -63,17 +64,17 @@ class UserController
     /**
      * @Route("/update/{id}", name="update_user", methods={"PUT"})
      */
-    public function updateUser($id, Request $request): JsonResponse
+    public function updateUser($id, Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
-        $data = json_decode($request->getContent(), true);
+        $data = (object) json_decode($request->getContent(), true);
 
-        $this->userRepository->updateUser($user, $data);
+        $this->userRepository->updateUser($user, $data, $encoder);
 
         return new JsonResponse(['status' => 'user updated!'], Response::HTTP_OK);
     }
     /**
-     * @Route("/update/{id}/activate", name="update_user", methods={"PUT"})
+     * @Route("/update/{id}/activate", name="update_activate_user", methods={"PUT"})
      */
     public function activateUser($id): JsonResponse
     {

@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,23 +23,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
-    public function getAllUser() {
-      $query = $this->createQueryBuilder('e');
-      $query->where('e.isDeleted IS NULL');
-      $query->orWhere('e.isDeleted = false');
-      $data = $query->orderBy('e.id', 'ASC')
+    public function getAllUser($role)
+    {
+        $query = $this->createQueryBuilder('e');
+        $query->where('e.isDeleted IS NULL');
+        $query->andWhere('e.roles LIKE :roles')
+                ->setParameter('roles', '%"'.$role.'"%');
+        $query->orWhere('e.isDeleted = false');
+        $data = $query->orderBy('e.id', 'ASC')
           ->getQuery()->getResult();
-      return (object) $data;
+        return (object) $data;
     }
 
-    public function getByUsername($username) {
-      $query = $this->createQueryBuilder('e');
-      $query->where('e.isDeleted = false or e.isDeleted IS NULL');
-      $query->andWhere('e.isActive = true');
-      $query->andWhere('e.username = :user')->setParameter('user', $username);
-      $data = $query->orderBy('e.id', 'ASC')
+    public function getByUsername($username)
+    {
+        $query = $this->createQueryBuilder('e');
+        $query->where('e.isDeleted = false or e.isDeleted IS NULL');
+        $query->andWhere('e.isActive = true');
+        $query->andWhere('e.username = :user')->setParameter('user', $username);
+        $data = $query->orderBy('e.id', 'ASC')
           ->getQuery()->getResult();
-      return $data;
+        return $data;
     }
 
     /**
@@ -55,26 +60,35 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    public function removeUser(User $user)
-  {
-    $user->setIsDeleted(true);
+    public function updateUser(User $user, $data, UserPasswordEncoderInterface $encoder)
+    {
+        empty($data->username) ? true : $user->setUsername($data->username);
+        empty($data->password) ? true : $user->setPassword($encoder->encodePassword($user, $data->password));
+        empty($data->email) ? true : $user->setEmail($data->email);
 
-    $this->_em->flush();
-  }
+        $this->_em->flush();
+    }
+
+    public function removeUser(User $user)
+    {
+        $user->setIsDeleted(true);
+
+        $this->_em->flush();
+    }
 
     public function setPassport(User $user)
-  {
-    $user->setIsPassportActive(true);
-    $user->setPassportAccess(uniqid().'-'.uniqid().'-'.uniqid());
-    $user->setPassportExpiry(date("Y-m-d H:i:s", time() + 86400));
+    {
+        $user->setIsPassportActive(true);
+        $user->setPassportAccess(uniqid().'-'.uniqid().'-'.uniqid());
+        $user->setPassportExpiry(date("Y-m-d H:i:s", time() + 86400));
 
-    $this->_em->flush();
-  }
+        $this->_em->flush();
+    }
 
-  public function activateUser(User $user)
-  {
-    $user->setIsActive(!$user->getIsActive());
+    public function activateUser(User $user)
+    {
+        $user->setIsActive(!$user->getIsActive());
 
-    $this->_em->flush();
-  }
+        $this->_em->flush();
+    }
 }

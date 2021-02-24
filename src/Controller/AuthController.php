@@ -35,9 +35,10 @@ class AuthController extends ApiController
         $username = $request->get('username');
         $password = $request->get('password');
         $email = $request->get('email');
+        $roles = $request->get('roles');
 
-        if (empty($username) || empty($password) || empty($email)) {
-            return $this->respondValidationError("Invalid Username or Password or Email");
+        if (empty($username) || empty($password) || empty($email) || empty($roles)) {
+            return $this->respondValidationError("Invalid Username or Password or Email or Roles");
         }
 
 
@@ -45,7 +46,7 @@ class AuthController extends ApiController
         $user->setPassword($encoder->encodePassword($user, $password));
         $user->setEmail($email);
         $user->setIsActive(true);
-        $user->setRoles('["ROLE_ADMIN"]');
+        $user->setRoles($roles);
         $user->setUsername($username);
         $em->persist($user);
         $em->flush();
@@ -77,6 +78,5 @@ class AuthController extends ApiController
         } else {
             return new JsonResponse(['message' => 'Login failed.'], Response::HTTP_UNAUTHORIZED);
         }
-
     }
 }
