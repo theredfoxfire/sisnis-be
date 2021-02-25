@@ -14,3 +14,11 @@ api_login_check:
 test:
   path: /api/test
   controller: App\Controller\ApiController::test
+
+## student end point declaration ##
+##
+##
+student_get_detail:
+  path: /student/api/user/get/{id}
+  controller: App\Controller\UserController::getOneUser
+  methods: GET
