@@ -44,12 +44,15 @@ class UserController
     /**
      * @Route("/get-all/{role}", name="get_all_users", methods={"GET"})
      */
-    public function getAllUsers($role): JsonResponse
+    public function getAllUsers(Request $request, $role): JsonResponse
     {
-        $users = $this->userRepository->getAllUser($role);
+        $currentPage = $request->query->get('page');
+        $pageItems = $request->query->get('pageItems');
+        $start = ($currentPage - 1) * $pageItems;
+        $users = $this->userRepository->getAllUser($role, $start, $pageItems);
         $data = [];
 
-        foreach ($users as $user) {
+        foreach ($users->data as $user) {
             $data[] = [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
@@ -58,7 +61,7 @@ class UserController
             ];
         }
 
-        return new JsonResponse(['users' => $data], Response::HTTP_OK);
+        return new JsonResponse(['users' => $data, 'totals' => $users->totals], Response::HTTP_OK);
     }
 
     /**

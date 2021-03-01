@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use App\Repository\UserRepository;
 
 /**
  * Class StudentSiteController
@@ -22,18 +24,22 @@ class StudentController
     private $studentRepository;
     private $classRoomRepository;
     private $classHistoryRepository;
+    private $userRepository;
 
-    public function __construct(StudentRepository $studentRepository, ClassRoomRepository $classRoomRepository, ClassHistoryRepository $classHistoryRepository)
+    public function __construct(StudentRepository $studentRepository,
+    UserRepository $userRepository,
+    ClassRoomRepository $classRoomRepository, ClassHistoryRepository $classHistoryRepository)
     {
         $this->studentRepository = $studentRepository;
         $this->classRoomRepository = $classRoomRepository;
         $this->classHistoryRepository = $classHistoryRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
      * @Route("/add", name="add_student", methods={"POST"})
      */
-    public function addStudent(Request $request): JsonResponse
+    public function addStudent(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
         $data = (object)json_decode($request->getContent(), true);
 
@@ -44,8 +50,23 @@ class StudentController
         if (!empty($data->classRoom)) {
           $classRoom = $this->classRoomRepository->findOneBy(['id' => $data->classRoom]);
         }
+        $lowerSerial = strtolower($data->serial);
+        $userData = [
+            'username' => strtolower($lowerSerial),
+            'password' => '12345'.strtolower($lowerSerial),
+            'email' => strtolower($lowerSerial).'@mail.com',
+            'roles' => '["ROLE_STUDENT"]',
+        ];
+        $parentData = [
+            'username' => 'wali'.strtolower($lowerSerial),
+            'password' => 'wali12345',
+            'email' => 'wali'.strtolower($lowerSerial).'@mail.com',
+            'roles' => '["ROLE_PARENT"]',
+        ];
 
-        $this->studentRepository->saveStudent($data, $classRoom);
+        $userStudent = $this->userRepository->createUser((object) $userData, $encoder);
+        $userParent = $this->userRepository->createUser((object) $parentData, $encoder);
+        $this->studentRepository->saveStudent($data, $classRoom, $userStudent, $userParent);
 
         return new JsonResponse(['status' => 'Student added!'], Response::HTTP_OK);
     }

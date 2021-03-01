@@ -23,16 +23,43 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
-    public function getAllUser($role)
+    public function createUser($data, $encoder)
+    {
+        $username = $data->username;
+        $password = $data->password;
+        $email = $data->email;
+        $roles = $data->roles;
+        $user = new User($username);
+        $user->setPassword($encoder->encodePassword($user, $password));
+        $user->setEmail($email);
+        $user->setIsActive(true);
+        $user->setRoles($roles);
+        $user->setUsername($username);
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        return $user;
+    }
+
+    public function getAllUser($role, $start = 0, $max = 25)
     {
         $query = $this->createQueryBuilder('e');
         $query->where('e.isDeleted IS NULL');
-        $query->andWhere('e.roles LIKE :roles')
-                ->setParameter('roles', '%"'.$role.'"%');
         $query->orWhere('e.isDeleted = false');
+        $query->andWhere('e.roles LIKE :roles')
+        ->setParameter('roles', '%"'.$role.'"%');
+
         $data = $query->orderBy('e.id', 'ASC')
-          ->getQuery()->getResult();
-        return (object) $data;
+        ->setFirstResult($start)
+        ->setMaxResults($max)
+        ->getQuery()->getResult();
+
+        $totals = $this->createQueryBuilder('e')
+        ->where('e.isDeleted IS NULL')
+        ->orWhere('e.isDeleted = false')
+        ->getQuery()
+        ->getResult();
+        return (object) array('totals' => count($totals), 'data' => $data);
     }
 
     public function getByUsername($username)

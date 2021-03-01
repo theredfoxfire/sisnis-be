@@ -34,17 +34,17 @@ class ScheduleRepository extends ServiceEntityRepository
         $query->where('e.isDeleted IS NULL');
         $query->orWhere('e.isDeleted = false');
         $data = $query->orderBy('e.id', 'ASC')
-      ->setFirstResult($start)
-      ->setMaxResults($max)
-          ->getQuery()->getResult();
+        ->setFirstResult($start)
+        ->setMaxResults($max)
+        ->getQuery()->getResult();
         $totals = $this->createQueryBuilder('e')
-      ->where('e.isDeleted IS NULL')
-      ->orWhere('e.isDeleted = false')
-          ->getQuery()
-          ->getResult();
+        ->where('e.isDeleted IS NULL')
+        ->orWhere('e.isDeleted = false')
+        ->getQuery()
+        ->getResult();
         return (object) array('totals' => count($totals), 'data' => $data);
     }
-    
+
     public function isScheduleExist(Room $room, TimeSlot $timeSlot, String $day)
     {
         $query = $this->createQueryBuilder('e');

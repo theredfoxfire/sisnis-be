@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Student;
+use App\Entity\User;
 use App\Entity\ClassRoom;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -30,7 +31,7 @@ class StudentRepository extends ServiceEntityRepository
       $this->classStatus = (object)['yes' => 'YES', 'no' => 'NO'];
   }
 
-  public function saveStudent($studentData, ClassRoom $classRoom)
+  public function saveStudent($studentData, ClassRoom $classRoom, User $userStudent, User $userParent)
   {
       $student = new Student();
 
@@ -41,6 +42,8 @@ class StudentRepository extends ServiceEntityRepository
       $student->setParentName($studentData->parentName);
       $student->setParentAddress($studentData->parentAddress);
       $student->setCity($studentData->city);
+      $student->setUserId($userStudent);
+      $student->setParent($userParent);
       $student->setReligion($studentData->religion);
       if ($classRoom) {
         $student->setClassRoom($classRoom);

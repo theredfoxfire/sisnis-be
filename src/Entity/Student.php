@@ -83,6 +83,16 @@ class Student
      */
     private $studentAttendances;
 
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="student", cascade={"persist", "remove"})
+     */
+    private $user;
+
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="children", cascade={"persist", "remove"})
+     */
+    private $parent;
+
     public function __construct()
     {
         $this->examPoints = new ArrayCollection();
@@ -290,6 +300,30 @@ class Student
                 $studentAttendance->setStudent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUserId(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getParent(): ?User
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?User $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }

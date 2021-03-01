@@ -43,6 +43,11 @@ class Teacher
      */
     private $isDeleted;
 
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="teacher", cascade={"persist", "remove"})
+     */
+    private $user;
+
     public function __construct()
     {
         $this->teacherClassToSubjects = new ArrayCollection();
@@ -157,6 +162,18 @@ class Teacher
     public function setIsDeleted(?bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUserId(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
