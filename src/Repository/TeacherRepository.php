@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Teacher;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,12 +28,13 @@ class TeacherRepository extends ServiceEntityRepository
       $this->manager = $manager;
   }
 
-  public function saveTeacher($teacherData)
+  public function saveTeacher($teacherData, User $userTeacher)
   {
       $teacher = new Teacher();
 
       $teacher->setSerial($teacherData->serial);
       $teacher->setName($teacherData->name);
+      $teacher->setUserId($userTeacher);
 
       $this->manager->persist($teacher);
       $this->manager->flush();

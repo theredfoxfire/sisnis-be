@@ -26,9 +26,12 @@ class StudentController
     private $classHistoryRepository;
     private $userRepository;
 
-    public function __construct(StudentRepository $studentRepository,
-    UserRepository $userRepository,
-    ClassRoomRepository $classRoomRepository, ClassHistoryRepository $classHistoryRepository)
+    public function __construct(
+        StudentRepository $studentRepository,
+        UserRepository $userRepository,
+        ClassRoomRepository $classRoomRepository,
+        ClassHistoryRepository $classHistoryRepository
+    )
     {
         $this->studentRepository = $studentRepository;
         $this->classRoomRepository = $classRoomRepository;
@@ -48,7 +51,7 @@ class StudentController
         }
         $classRoom = null;
         if (!empty($data->classRoom)) {
-          $classRoom = $this->classRoomRepository->findOneBy(['id' => $data->classRoom]);
+            $classRoom = $this->classRoomRepository->findOneBy(['id' => $data->classRoom]);
         }
         $lowerSerial = strtolower($data->serial);
         $userData = [
@@ -147,9 +150,9 @@ class StudentController
         $data = (object)json_decode($request->getContent(), true);
         $classRoom = null;
         if (!empty($data->classRoom)) {
-          $classRoom = $this->classRoomRepository->findOneBy(['id' => $data->classRoom]);
-          $student->getClassRoom() ? $this->classHistoryRepository->saveClassHistory($student, $student->getClassRoom()) : false;
-          $student->setClassRoom($classRoom);
+            $classRoom = $this->classRoomRepository->findOneBy(['id' => $data->classRoom]);
+            $student->getClassRoom() ? $this->classHistoryRepository->saveClassHistory($student, $student->getClassRoom()) : false;
+            $student->setClassRoom($classRoom);
         }
 
         $this->studentRepository->updateStudent($student, $data);

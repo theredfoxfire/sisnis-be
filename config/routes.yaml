@@ -19,6 +19,22 @@ test:
 ##
 ##
 student_get_detail:
-  path: /student/api/user/get/{id}
-  controller: App\Controller\UserController::getOneUser
+  path: /student/api/user/get-user/detail
+  controller: App\Controller\UserController::getUserInfo
+  methods: GET
+
+## teacher end point declaration ##
+##
+##
+teacher_get_detail:
+  path: /teacher/api/user/get-user/detail
+  controller: App\Controller\UserController::getUserInfo
+  methods: GET
+
+## teacher end point declaration ##
+##
+##
+parent_get_detail:
+  path: /parent/api/user/get-user/detail
+  controller: App\Controller\UserController::getUserInfo
   methods: GET

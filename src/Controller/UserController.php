@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 /**
  * Class UserSiteController
@@ -19,10 +21,12 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserController
 {
     private $userRepository;
+    private $tokenStorage;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, TokenStorageInterface $tokenStorage)
     {
         $this->userRepository = $userRepository;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -31,12 +35,36 @@ class UserController
     public function getOneUser($id): JsonResponse
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
-
+        if (empty($user)) {
+            throw new NotFoundHttpException('User not found, param is invalid!');
+        }
         $data = [
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'username' => $user->getUsername(),
         ];
+
+        return new JsonResponse(['user' => $data], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/get-user/detail", name="get_user_info", methods={"GET"})
+     */
+    public function getUserInfo(JWTTokenManagerInterface $JWTManager): JsonResponse
+    {
+        $token = (object)$JWTManager->decode($this->tokenStorage->getToken());
+        $user = $this->userRepository->findOneBy(['username' => $token->username]);
+        if (empty($user)) {
+            throw new NotFoundHttpException('User not found, param is invalid!');
+        }
+        $data = [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'username' => $user->getUsername(),
+                'student' => $user->getStudent() ? $user->getStudent()->toArray() : [],
+                'children' => $user->getChildren() ? $user->getChildren()->toArray() : [],
+                'teacher' => $user->getTeacher() ? $user->getTeacher()->toArray() : [],
+            ];
 
         return new JsonResponse(['user' => $data], Response::HTTP_OK);
     }

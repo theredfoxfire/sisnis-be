@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use App\Repository\UserRepository;
 
 /**
  * Class TeacherSiteController
@@ -27,28 +29,39 @@ class TeacherController
     private $subjectRepository;
     private $teacherMapRepository;
     private $academicYearRepository;
+    private $userRepository;
 
-    public function __construct(AcademicYearRepository $academicYearRepository, TeacherClassToSubjectRepository $teacherMapRepository,SubjectRepository $subjectRepository, TeacherRepository $teacherRepository, ClassRoomRepository $classRoomRepository)
+    public function __construct(AcademicYearRepository $academicYearRepository,
+    UserRepository $userRepository,
+    TeacherClassToSubjectRepository $teacherMapRepository,SubjectRepository $subjectRepository, TeacherRepository $teacherRepository, ClassRoomRepository $classRoomRepository)
     {
         $this->teacherRepository = $teacherRepository;
         $this->classRoomRepository = $classRoomRepository;
         $this->subjectRepository = $subjectRepository;
         $this->teacherMapRepository = $teacherMapRepository;
         $this->academicYearRepository = $academicYearRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
      * @Route("/add", name="add_teacher", methods={"POST"})
      */
-    public function addTeacher(Request $request): JsonResponse
+    public function addTeacher(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
         $data = (object)json_decode($request->getContent(), true);
 
         if (empty($data->name) || empty($data->serial)) {
             throw new NotFoundHttpException('Expecting mandatory parameters!');
         }
-
-        $this->teacherRepository->saveTeacher($data);
+        $lowerSerial = strtolower($data->serial);
+        $userData = [
+                'username' => strtolower($lowerSerial),
+                'password' => '12345'.strtolower($lowerSerial),
+                'email' => strtolower($lowerSerial).'@mail.com',
+                'roles' => '["ROLE_TEACHER"]',
+            ];
+        $userTeacher = $this->userRepository->createUser((object) $userData, $encoder);
+        $this->teacherRepository->saveTeacher($data, $userTeacher);
 
         return new JsonResponse(['status' => 'Teacher added!'], Response::HTTP_OK);
     }
