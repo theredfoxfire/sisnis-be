@@ -95,7 +95,7 @@ class StudentRepository extends ServiceEntityRepository
         $query->where('e.classRoom IS NOT NULL');
       }
       if ($name != "") {
-        $query->andWhere('e.name LIKE :name')->setParameter('name', $name.'%');
+        $query->andWhere('e.name LIKE :name')->setParameter('name', '%'.$name.'%');
       }
       $query->andWhere('e.isDeleted IS NULL');
       $query->orWhere('e.isDeleted = false');

@@ -30,6 +30,10 @@ teacher_get_detail:
   path: /teacher/api/user/get-user/detail
   controller: App\Controller\UserController::getUserInfo
   methods: GET
+teacher_get_by_id:
+  path: /teacher/api/teacher/get/{id}
+  controller: App\Controller\TeacherController::getOneTeacher
+  methods: GET
 
 ## parent end point declaration ##
 ##
