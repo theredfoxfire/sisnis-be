@@ -135,6 +135,13 @@ class Student
               'id' => $this->getId(),
               'serial' => $this->getSerial(),
               'name' => $this->getName(),
+              'gender' => $this->getGender(),
+              'birthDay' => $this->getBirthDay(),
+              'parentName' => $this->getParentName(),
+              'parentAddress' => $this->getParentName(),
+              'city' => $this->getCity(),
+              'religion' => $this->getReligion(),
+              'classRoom' => $this->getClassRoom()->toArray(),
           ];
       }
 

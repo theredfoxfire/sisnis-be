@@ -57,13 +57,21 @@ class UserController
         if (empty($user)) {
             throw new NotFoundHttpException('User not found, param is invalid!');
         }
+        $details = [];
+        if ($user->getStudent()) {
+            $details = $user->getStudent()->toArray();
+        }
+        if ($user->getChildren()) {
+            $details = $user->getChildren()->toArray();
+        }
+        if ($user->getTeacher()) {
+            $details = $user->getTeacher()->toArray();
+        }
         $data = [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
                 'username' => $user->getUsername(),
-                'student' => $user->getStudent() ? $user->getStudent()->toArray() : [],
-                'children' => $user->getChildren() ? $user->getChildren()->toArray() : [],
-                'teacher' => $user->getTeacher() ? $user->getTeacher()->toArray() : [],
+                'details' => $details,
             ];
 
         return new JsonResponse(['user' => $data], Response::HTTP_OK);

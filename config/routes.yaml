@@ -31,7 +31,7 @@ teacher_get_detail:
   controller: App\Controller\UserController::getUserInfo
   methods: GET
 
-## teacher end point declaration ##
+## parent end point declaration ##
 ##
 ##
 parent_get_detail:
