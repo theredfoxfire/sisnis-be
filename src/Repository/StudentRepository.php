@@ -94,13 +94,10 @@ class StudentRepository extends ServiceEntityRepository
       if (strtoupper($haveClass) == $this->classStatus->yes) {
         $query->where('e.classRoom IS NOT NULL');
       }
-      if ($name != "" && $haveClass != "") {
+      if ($name != "") {
         $query->andWhere('e.name LIKE :name')->setParameter('name', $name.'%');
       }
-      if ($name != "" && $haveClass == "") {
-        $query->where('e.name LIKE :name')->setParameter('name', $name.'%');
-      }
-      $query->orWhere('e.isDeleted IS NULL');
+      $query->andWhere('e.isDeleted IS NULL');
       $query->orWhere('e.isDeleted = false');
       $data = $query->orderBy('e.id', 'ASC')
           ->setFirstResult($start)
