@@ -138,7 +138,7 @@ class Student
               'gender' => $this->getGender(),
               'birthDay' => $this->getBirthDay(),
               'parentName' => $this->getParentName(),
-              'parentAddress' => $this->getParentName(),
+              'parentAddress' => $this->getParentAddress(),
               'city' => $this->getCity(),
               'religion' => $this->getReligion(),
               'classRoom' => $this->getClassRoom()->toArray(),
