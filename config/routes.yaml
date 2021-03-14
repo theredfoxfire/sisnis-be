@@ -22,6 +22,18 @@ student_get_detail:
   path: /student/api/user/get-user/detail
   controller: App\Controller\UserController::getUserInfo
   methods: GET
+student_user_get_by_id:
+  path: /student/api/user/get/{id}
+  controller: App\Controller\UserController::getOneUser
+  methods: GET
+student_schedule_get_by_id:
+  path: /student/api/schedule/get/student/{id}
+  controller: App\Controller\ScheduleController::getStudentSchedules
+  methods: GET
+student_user_update_by_id:
+  path: /student/api/user/update/{id}
+  controller: App\Controller\UserController::updateUser
+  methods: PUT
 
 ## teacher end point declaration ##
 ##
@@ -34,6 +46,14 @@ teacher_get_by_id:
   path: /teacher/api/teacher/get/{id}
   controller: App\Controller\TeacherController::getOneTeacher
   methods: GET
+teacher_user_get_by_id:
+  path: /teacher/api/user/get/{id}
+  controller: App\Controller\UserController::getOneUser
+  methods: GET
+teacher_user_update_by_id:
+  path: /teacher/api/user/update/{id}
+  controller: App\Controller\UserController::updateUser
+  methods: PUT
 
 ## parent end point declaration ##
 ##
@@ -42,3 +62,11 @@ parent_get_detail:
   path: /parent/api/user/get-user/detail
   controller: App\Controller\UserController::getUserInfo
   methods: GET
+parent_user_get_by_id:
+  path: /parent/api/user/get/{id}
+  controller: App\Controller\UserController::getOneUser
+  methods: GET
+parent_user_update_by_id:
+  path: /parent/api/user/update/{id}
+  controller: App\Controller\UserController::updateUser
+  methods: PUT

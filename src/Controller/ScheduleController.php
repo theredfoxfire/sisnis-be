@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\ScheduleRepository;
 use App\Repository\TimeSlotRepository;
 use App\Repository\RoomRepository;
+use App\Repository\StudentRepository;
 use App\Repository\TeacherClassToSubjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,18 +25,20 @@ class ScheduleController
     private $timeSlotRepository;
     private $roomRepository;
     private $teacherClassToSubjectRepository;
+    private $studentRepository;
 
     public function __construct(
         ScheduleRepository $scheduleRepository,
         TimeSlotRepository $timeSlotRepository,
         RoomRepository $roomRepository,
-        TeacherClassToSubjectRepository $teacherClassToSubjectRepository
-    )
-    {
+        TeacherClassToSubjectRepository $teacherClassToSubjectRepository,
+        StudentRepository $studentRepository
+    ) {
         $this->scheduleRepository = $scheduleRepository;
         $this->timeSlotRepository = $timeSlotRepository;
         $this->roomRepository = $roomRepository;
         $this->teacherClassToSubjectRepository = $teacherClassToSubjectRepository;
+        $this->studentRepository = $studentRepository;
     }
 
     /**
@@ -65,6 +68,9 @@ class ScheduleController
     public function getOneSchedule($id): JsonResponse
     {
         $schedule = $this->scheduleRepository->findOneBy(['id' => $id]);
+        if (empty($schedule)) {
+            throw new NotFoundHttpException('Entity not found');
+        }
         $studentsMap = $schedule->getSubject()->getClassRoom()->getStudents();
         $students = [];
         foreach ($studentsMap as $key => $value) {
@@ -120,6 +126,44 @@ class ScheduleController
         }
 
         return new JsonResponse(['schedules' => $data, 'totals' => $schedules->totals], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/get/student/{id}", name="get_student_schedules", methods={"GET"})
+     */
+    public function getStudentSchedules($id): JsonResponse
+    {
+        $student = $this->studentRepository->findOneBy(['id' => $id]);
+        if (empty($student)) {
+            throw new NotFoundHttpException('Entity not found');
+        }
+        $classRoom = $student->getClassRoom();
+        $subjects = empty($classRoom->getTeacherClassToSubjects()) ? [] : $classRoom->getTeacherClassToSubjects();
+        $data = [];
+        foreach ($subjects as $key => $subject) {
+            $schedules = empty($subject->getSchedules()) ? [] : $subject->getSchedules();
+            foreach ($schedules as $schedule) {
+                $timeSlot = $schedule->getTimeSlot();
+                $room = $schedule->getRoom();
+                $subjectMap = $schedule->getSubject();
+                $teacher = $subjectMap->getTeacher();
+                $classRoom = $subjectMap->getClassRoom();
+                $subjectItem = $subjectMap->getSubject();
+                $academicYear = $subjectMap->getAcademicYear();
+
+                $data[] = [
+                    'id' => $schedule->getId(),
+                    'time' => $timeSlot->toArray(),
+                    'room' => $room->toArray(),
+                    'teacher' => $teacher->toArray(),
+                    'day' => $schedule->getDay(),
+                    'classRoom' => $classRoom->toArray(),
+                    'subject' => $subjectItem->toArray(),
+                    'academicYear' => $academicYear->toArray(),
+                ];
+            }
+        }
+        return new JsonResponse(['schedules' => $data], Response::HTTP_OK);
     }
 
     /**

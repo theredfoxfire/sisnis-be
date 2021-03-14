@@ -72,6 +72,9 @@ class TeacherController
     public function getOneTeacher($id): JsonResponse
     {
         $teacher = $this->teacherRepository->findOneBy(['id' => $id]);
+        if (empty($teacher)) {
+            throw new NotFoundHttpException('Entity not found!');
+        }
         $classSubjects = [];
         $guardianClass = [];
         foreach ($teacher->getTeacherClassToSubjects() as $key => $value) {
