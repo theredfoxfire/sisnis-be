@@ -37,6 +37,11 @@ class ExamPoint
      */
     private $isDeleted;
 
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $fileExam;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +91,18 @@ class ExamPoint
     public function setIsDeleted(?bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getFileExam(): ?string
+    {
+        return $this->fileExam;
+    }
+
+    public function setFileExam(?string $fileExam): self
+    {
+        $this->fileExam = $fileExam;
 
         return $this;
     }

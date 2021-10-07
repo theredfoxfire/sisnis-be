@@ -93,11 +93,17 @@ class Student
      */
     private $parent;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Billing::class, mappedBy="student")
+     */
+    private $billings;
+
     public function __construct()
     {
         $this->examPoints = new ArrayCollection();
         $this->classHistories = new ArrayCollection();
         $this->studentAttendances = new ArrayCollection();
+        $this->billings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -331,6 +337,37 @@ class Student
     public function setParent(?User $parent): self
     {
         $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Billing[]
+     */
+    public function getBillings(): Collection
+    {
+        return $this->billings;
+    }
+
+    public function addBilling(Billing $billing): self
+    {
+        if (!$this->billings->contains($billing)) {
+            $this->billings[] = $billing;
+            $billing->setStudent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBilling(Billing $billing): self
+    {
+        if ($this->billings->contains($billing)) {
+            $this->billings->removeElement($billing);
+            // set the owning side to null (unless already changed)
+            if ($billing->getStudent() === $this) {
+                $billing->setStudent(null);
+            }
+        }
 
         return $this;
     }
