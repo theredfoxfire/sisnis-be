@@ -73,7 +73,7 @@ class ExamController
         foreach ($data->studentPoints as $key => $value) {
             $exam = $this->examRepository->findOneBy(['id' => $data->examId]);
             $student = $this->studentRepository->findOneBy(['id' => $value['id']]);
-            $this->examPointRepository->saveExamPoint($value['point'], $exam, $student);
+            $this->examPointRepository->saveExamPoint($value, $exam, $student);
         }
 
         return new JsonResponse(['status' => 'Exam added!'], Response::HTTP_OK);
@@ -96,7 +96,7 @@ class ExamController
             } else {
               $exam = $this->examRepository->findOneBy(['id' => $data->examId]);
               $student = $this->studentRepository->findOneBy(['id' => $value['id']]);
-              $this->examPointRepository->saveExamPoint($value['point'], $exam, $student);
+              $this->examPointRepository->saveExamPoint($value, $exam, $student);
             }
 
         }
@@ -123,6 +123,7 @@ class ExamController
             $examPoints[$key] = [
                 'id' => $value->getStudent()->getId(),
                 'point' => $value->getPoint(),
+                'comment' => $value->getComment(),
                 'pointId' => $value->getId(),
             ];
         }
@@ -161,7 +162,11 @@ class ExamController
         $data = [
             'id' => $teacherSubject->getId(),
             'name' => $teacherSubject->getSubject()->getName(),
+            'passingPoint' => $teacherSubject->getPassingPoint(),
+            'academicYear' => $teacherSubject->getAcademicYear()->getId(),
+            'teacherSubjectId' => $teacherSubject->getSubject()->getId(),
             'className' => $teacherSubject->getClassRoom()->getName(),
+            'classId' => $teacherSubject->getClassRoom()->getId(),
             'teacherName' => $teacherSubject->getTeacher()->getName(),
             'teacherId' => $teacherSubject->getTeacher()->getId(),
             'exams' => $exams,

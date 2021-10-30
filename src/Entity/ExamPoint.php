@@ -42,6 +42,11 @@ class ExamPoint
      */
     private $fileExam;
 
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $comment;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -103,6 +108,18 @@ class ExamPoint
     public function setFileExam(?string $fileExam): self
     {
         $this->fileExam = $fileExam;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
 
         return $this;
     }

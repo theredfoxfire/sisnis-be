@@ -193,6 +193,26 @@ class TeacherController
 
         return new JsonResponse(['status' => 'teacher updated!'], Response::HTTP_OK);
     }
+    
+    /**
+     * @Route("/update/class-room/{id}/{teacherSubjectID}", name="update_teacher_class", methods={"PUT"})
+     */
+    public function updateTeacherClassRoom($id, $teacherSubjectID, Request $request): JsonResponse
+    {
+        $data = (object) json_decode($request->getContent(), true);
+        if (empty($data->classRoomId) || empty($data->subjectId) || empty($data->year)) {
+            throw new NotFoundHttpException('Expecting mandatory parameters!');
+        }
+        $teacherMap = $this->teacherMapRepository->findOneById($teacherSubjectID);
+        $teacherMap->setPassingPoint($data->kkm ?? 0);
+        $teacherMap->setClassRoom($this->classRoomRepository->findOneBy(['id' => $data->classRoomId]));
+        $teacherMap->setSubject($this->subjectRepository->findOneBy(['id' => $data->subjectId]));
+        $teacherMap->setTeacher($this->teacherRepository->findOneBy(['id' => $id]));
+        $teacherMap->setAcademicYear($this->academicYearRepository->findOneBy(['id' => $data->year]));
+        $this->teacherMapRepository->updateTeacherClassRoom($teacherMap);
+
+        return new JsonResponse(['status' => 'teacher updated!'], Response::HTTP_OK);
+    }
 
     /**
      * @Route("/delete/class/{teacherMapId}", name="delete_teacher_class", methods={"DELETE"})

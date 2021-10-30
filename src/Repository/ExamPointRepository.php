@@ -29,13 +29,14 @@ class ExamPointRepository extends ServiceEntityRepository
         $this->manager = $manager;
     }
 
-    public function saveExamPoint($point, Exam $exam, Student $student)
+    public function saveExamPoint($data, Exam $exam, Student $student)
     {
         $examPoint = new ExamPoint();
 
         $examPoint->setExam($exam);
         $examPoint->setStudent($student);
-        $examPoint->setPoint($point);
+        $examPoint->setPoint($data['point']);
+        $examPoint->setComment($data['comment']);
 
         $this->manager->persist($examPoint);
         $this->manager->flush();
@@ -44,6 +45,7 @@ class ExamPointRepository extends ServiceEntityRepository
     public function updateExamPoint(ExamPoint $examPoint, $data)
     {
       $examPoint->setPoint($data['point']);
+      $examPoint->setComment($data['comment']);
       $this->manager->flush();
     }
 
